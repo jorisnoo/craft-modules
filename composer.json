@@ -1,0 +1,25 @@
+{
+    "name": "jorisnoo/craft-modules",
+    "type": "craft-module",
+    "authors": [
+        {
+            "name": "Joris Noordermeer",
+            "email": "contact@noordermeer.ch"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "jorisnoo\\CraftModules\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^8.0.2",
+        "craftcms/cms": "^4.0.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "yiisoft/yii2-composer": true,
+            "craftcms/plugin-installer": true
+        }
+    }
+}
