@@ -10,30 +10,11 @@ use craft\helpers\UrlHelper;
 use craft\web\UrlManager;
 use craft\web\View;
 use yii\base\Event;
-use yii\base\Module;
 
-class SeoPreview extends Module
+class SeoPreview extends BaseModule
 {
-    public function init()
-    {
-        Craft::setAlias('@jorisnoo/craft-modules', __DIR__);
 
-        // Set the controllerNamespace based on whether this is a console or web request
-        if (Craft::$app->request->isConsoleRequest) {
-            $this->controllerNamespace = 'jorisnoo\\CraftModules\\console\\controllers';
-        } else {
-            $this->controllerNamespace = 'jorisnoo\\CraftModules\\controllers';
-        }
-
-        parent::init();
-
-        // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function() {
-            $this->attachEventHandlers();
-        });
-    }
-
-    private function attachEventHandlers(): void
+    public function attachEventHandlers(): void
     {
         $request = Craft::$app->getRequest();
 
