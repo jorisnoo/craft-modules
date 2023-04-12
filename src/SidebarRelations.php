@@ -87,7 +87,7 @@ class SidebarRelations extends BaseModule
 
                 $query = match ($relationType) {
                     Category::class => 'group',
-                    'default' => 'section',
+                    default => 'section',
                 };
 
                 $relatedEntries = Category::find()->{$query}($filter['relation']);
