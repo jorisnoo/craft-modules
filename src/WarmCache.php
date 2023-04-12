@@ -4,6 +4,8 @@ namespace jorisnoo\CraftModules;
 use Craft;
 use craft\console\controllers\InvalidateTagsController;
 use craft\helpers\App;
+use craft\helpers\Queue;
+use jorisnoo\CraftModules\Jobs\TriggerCachewarming;
 use yii\base\ActionEvent;
 use yii\base\Event;
 
@@ -26,19 +28,10 @@ class WarmCache extends BaseModule
                     return;
                 }
 
-                $cwSiteId = App::env('CACHEWARMER_SITE_ID');
-                $cwToken = App::env('CACHEWARMER_TOKEN');
-
-                if(!$cwSiteId || !$cwToken) {
-                    return;
-                }
-
-                // todo: run in queue job
-                // https://craftcms.com/docs/4.x/extend/queue-jobs.html#writing-a-job
+                // run in queue job
+                Queue::push(new TriggerCachewarming());
 
                 // todo: refresh single url after entry was saved?
-
-//                    @file_get_contents("https://cachewarmer.noo.dev/api/warm/{$cwSiteId}?token={$cwToken}");
             }
         );
     }
