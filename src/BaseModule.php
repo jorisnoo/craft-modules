@@ -8,7 +8,7 @@ abstract class BaseModule extends Module
 {
     public function init()
     {
-        Craft::setAlias('@jorisnoo/craft-modules', __DIR__);
+        Craft::setAlias('@jorisnoo/CraftModules', __DIR__);
 
         // Set the controllerNamespace based on whether this is a console or web request
         if (Craft::$app->request->isConsoleRequest) {
