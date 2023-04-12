@@ -100,6 +100,10 @@ class SidebarRelations extends BaseModule
 
                 $relatedEntries = $relatedEntries->limit(null)->all();
 
+                if(count($relatedEntries) < 2){
+                    return [];
+                }
+
                 $nestedSources = [];
 
                 foreach ($relatedEntries as $relatedEntry) {
@@ -121,6 +125,7 @@ class SidebarRelations extends BaseModule
 
                 return [$sourceKey => $nestedSources];
             })
+            ->filter()
             ->toArray();
     }
 }
