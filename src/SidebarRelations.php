@@ -90,7 +90,7 @@ class SidebarRelations extends BaseModule
                     default => 'section',
                 };
 
-                $relatedEntries = Category::find()->{$query}($filter['relation']);
+                $relatedEntries = $relationType::find()->{$query}($filter['relation']);
 
                 if(isset($filter['where']) && is_array($filter['where'])) {
                     foreach ($filter['where'] as $key => $condition) {
