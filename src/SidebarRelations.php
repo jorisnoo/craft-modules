@@ -3,6 +3,7 @@ namespace jorisnoo\CraftModules;
 
 use Craft;
 use craft\base\Element;
+use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\RegisterElementSourcesEvent;
 use craft\helpers\Json;
@@ -44,15 +45,26 @@ class SidebarRelations extends BaseModule
     {
         $isDevMode = Craft::$app->getConfig()->getGeneral()->devMode;
         $cacheKey = $this->getConfigCacheKey();
+        $cache = Craft::$app->getCache();
 
         if ($isDevMode) {
             $cachedConfig = null;
             $this->clearConfigCache();
         } else {
-            $cachedConfig = Craft::$app->getCache()?->get($cacheKey) ?? [];
+            $cachedConfig = $cache->get($cacheKey) ?? [];
         }
 
-        return $cachedConfig ?? $this->getRelationSources() ?? [];
+        if($cachedConfig) {
+            return $cachedConfig;
+        }
+
+        $config = $this->getRelationSources() ?? [];
+
+        if (!$isDevMode) {
+            $cache->set($cacheKey, $config);
+        }
+
+        return $config;
     }
 
     public function getRelationSources(): array
@@ -71,9 +83,16 @@ class SidebarRelations extends BaseModule
                     return [];
                 }
 
-                $relatedEntries = Entry::find()->section($filter['relation']);
+                $relationType = $filter['relationType'] ?? Entry::class;
 
-                if($filter['where']) {
+                $query = match ($relationType) {
+                    Category::class => 'group',
+                    'default' => 'section',
+                };
+
+                $relatedEntries = Category::find()->{$query}($filter['relation']);
+
+                if(isset($filter['where']) && is_array($filter['where'])) {
                     foreach ($filter['where'] as $key => $condition) {
                         $relatedEntries = $relatedEntries->{$key}($condition);
                     }
