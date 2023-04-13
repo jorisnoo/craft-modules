@@ -6,7 +6,7 @@ use craft\helpers\App;
 use craft\helpers\Queue;
 use craft\web\Controller;
 
-use jorisnoo\CraftModules\Jobs\TriggerCachewarming;
+use jorisnoo\CraftModules\jobs\TriggerCachewarming;
 use yii\caching\TagDependency;
 use yii\web\ForbiddenHttpException;
 use yii\web\Response;
