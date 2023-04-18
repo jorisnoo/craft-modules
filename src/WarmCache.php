@@ -1,10 +1,10 @@
 <?php
 namespace jorisnoo\CraftModules;
 
-use Craft;
 use craft\console\controllers\InvalidateTagsController;
+use craft\elements\Entry;
+use craft\events\ModelEvent;
 use craft\events\RegisterUrlRulesEvent;
-use craft\helpers\App;
 use craft\helpers\Queue;
 use craft\web\UrlManager;
 use jorisnoo\CraftModules\jobs\TriggerCachewarming;
@@ -15,8 +15,20 @@ class WarmCache extends BaseModule
 {
     public function attachEventHandlers(): void
     {
-        // todo: refresh single url after entry was saved?
+        // refresh single url after entry was saved
+        Event::on(
+            Entry::class,
+            Entry::EVENT_AFTER_SAVE,
+            function (ModelEvent $event) {
+                if ($event->sender->enabled &&  $event->sender->url && $event->sender->getEnabledForSite() && !$event->sender->getIsRevision()) {
+                    Queue::push(new TriggerCachewarming([
+                        'url' => $event->sender->url,
+                    ]));
+                }
+            }
+        );
 
+        // refresh all urls after cache was cleared
         Event::on(
             InvalidateTagsController::class,
             InvalidateTagsController::EVENT_AFTER_ACTION,
@@ -25,6 +37,7 @@ class WarmCache extends BaseModule
             }
         );
 
+        // register refresh url
         Event::on(
             UrlManager::class,
             UrlManager::EVENT_REGISTER_SITE_URL_RULES,
