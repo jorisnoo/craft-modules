@@ -11,7 +11,7 @@ class TriggerCachewarming extends BaseJob
 {
     public string $url = '';
 
-    public const CW_URL = 'https://cachewarmer.noo.dev';
+    public const CW_URL = 'https://cachewarmer.app';
 
     public function execute($queue): void
     {
