@@ -28,12 +28,14 @@ class WarmCache extends BaseModule
             }
         );
 
-        // refresh all urls after cache was cleared
+        // refresh all urls after template cache was cleared
         Event::on(
             InvalidateTagsController::class,
             InvalidateTagsController::EVENT_AFTER_ACTION,
             function (ActionEvent $event) {
-                Queue::push(new TriggerCachewarming());
+                if($event->sender->action->id === 'template') {
+                    Queue::push(new TriggerCachewarming());
+                }
             }
         );
 
