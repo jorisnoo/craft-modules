@@ -2,6 +2,7 @@
 namespace jorisnoo\CraftModules;
 
 use craft\console\controllers\InvalidateTagsController;
+use craft\controllers\UtilitiesController;
 use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\events\RegisterUrlRulesEvent;
@@ -9,6 +10,7 @@ use craft\helpers\Queue;
 use craft\web\UrlManager;
 use jorisnoo\CraftModules\jobs\TriggerCachewarming;
 use yii\base\ActionEvent;
+use yii\base\Controller;
 use yii\base\Event;
 
 class WarmCache extends BaseModule
@@ -35,6 +37,19 @@ class WarmCache extends BaseModule
             function (ActionEvent $event) {
                 if($event->sender->action->id === 'template') {
                     Queue::push(new TriggerCachewarming());
+                }
+            }
+        );
+
+        Event::on(
+            UtilitiesController::class,
+            UtilitiesController::EVENT_AFTER_ACTION,
+            function (ActionEvent $event) {
+                if ($event->sender->action->id === 'invalidate-tags') {
+                    $tags = $event->sender->request->getBodyParam('tags');
+                    if (in_array('template', $tags, true)) {
+                        Queue::push(new TriggerCachewarming());
+                    }
                 }
             }
         );
