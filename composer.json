@@ -16,6 +16,13 @@
         "php": "^8.0.2",
         "craftcms/cms": "^4.0.0"
     },
+    "require-dev": {
+        "roave/security-advisories": "dev-latest",
+        "laravel/pint": "*"
+    },
+    "scripts": {
+        "lint": "pint"
+    },
     "config": {
         "allow-plugins": {
             "yiisoft/yii2-composer": true,

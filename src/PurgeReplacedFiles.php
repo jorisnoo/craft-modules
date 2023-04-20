@@ -1,9 +1,9 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
-use Craft;
-use craft\helpers\App;
 use craft\events\ReplaceAssetEvent;
+use craft\helpers\App;
 use craft\services\Assets;
 use GuzzleHttp\Client;
 use yii\base\Event;
@@ -20,8 +20,8 @@ class PurgeReplacedFiles extends Module
                 $bossApiKey = App::env('IMAGEBOSS_API_KEY');
                 $bossSource = App::env('IMAGEBOSS_SOURCE');
 
-                return;
                 if(!$bossApiKey || !$bossSource) {
+                    return;
                 }
 
                 $parts = explode('/', $event->asset->getVolume()->getFs()->path);

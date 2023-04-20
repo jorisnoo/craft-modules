@@ -1,4 +1,5 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
 use Craft;
@@ -12,6 +13,7 @@ use yii\base\Event;
 class SidebarRelations extends BaseModule
 {
     protected array $sources = [];
+
     protected array $config = [];
 
     public function attachEventHandlers(): void
@@ -33,7 +35,8 @@ class SidebarRelations extends BaseModule
     {
         $configFromFile = Json::encode($this->config)
             .collect($this->sources)->pluck('key')->join('');
-        return 'sidebarRelationsConfig_' . \md5($configFromFile);
+
+        return 'sidebarRelationsConfig_'.\md5($configFromFile);
     }
 
     public function clearConfigCache(): void
@@ -54,13 +57,13 @@ class SidebarRelations extends BaseModule
             $cachedConfig = $cache->get($cacheKey) ?? [];
         }
 
-        if($cachedConfig) {
+        if ($cachedConfig) {
             return $cachedConfig;
         }
 
         $config = $this->getRelationSources() ?? [];
 
-        if (!$isDevMode) {
+        if (! $isDevMode) {
             $cache->set($cacheKey, $config);
         }
 
@@ -72,14 +75,15 @@ class SidebarRelations extends BaseModule
         return collect($this->config)
             ->map(function ($filter) {
                 $filter['sectionUid'] = Craft::$app->sections->getSectionByHandle($filter['section'])?->uid ?? null;
+
                 return $filter;
             })
-            ->filter(fn($filter) => $filter['sectionUid'])
+            ->filter(fn ($filter) => $filter['sectionUid'])
             ->mapWithKeys(function ($filter) {
 
-                $sourceKey = collect($this->sources)->where('key', 'section:' . $filter['sectionUid'])->keys()->first();
+                $sourceKey = collect($this->sources)->where('key', 'section:'.$filter['sectionUid'])->keys()->first();
 
-                if(!$sourceKey) {
+                if (! $sourceKey) {
                     return [];
                 }
 
@@ -92,7 +96,7 @@ class SidebarRelations extends BaseModule
 
                 $relatedEntries = $relationType::find()->{$query}($filter['relation']);
 
-                if(isset($filter['where']) && is_array($filter['where'])) {
+                if (isset($filter['where']) && is_array($filter['where'])) {
                     foreach ($filter['where'] as $key => $condition) {
                         $relatedEntries = $relatedEntries->{$key}($condition);
                     }
@@ -100,7 +104,7 @@ class SidebarRelations extends BaseModule
 
                 $relatedEntries = $relatedEntries->limit(null)->all();
 
-                if(count($relatedEntries) < 2){
+                if (count($relatedEntries) < 2) {
                     return [];
                 }
 
@@ -108,7 +112,7 @@ class SidebarRelations extends BaseModule
 
                 foreach ($relatedEntries as $relatedEntry) {
                     $nestedSources[] = [
-                        'key' => 'related:' . $relatedEntry->uid,
+                        'key' => 'related:'.$relatedEntry->uid,
                         'label' => $relatedEntry->title,
                         'data' => [
                             'has-structure' => true,
@@ -118,8 +122,8 @@ class SidebarRelations extends BaseModule
                         ],
                         'criteria' => [
                             'sectionId' => $this->sources[$sourceKey]['criteria']['sectionId'],
-                            'relatedTo' => $relatedEntry
-                        ]
+                            'relatedTo' => $relatedEntry,
+                        ],
                     ];
                 }
 

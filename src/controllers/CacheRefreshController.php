@@ -1,11 +1,11 @@
 <?php
+
 namespace jorisnoo\CraftModules\controllers;
 
 use Craft;
 use craft\helpers\App;
 use craft\helpers\Queue;
 use craft\web\Controller;
-
 use jorisnoo\CraftModules\jobs\TriggerCachewarming;
 use yii\caching\TagDependency;
 use yii\web\ForbiddenHttpException;
@@ -13,7 +13,6 @@ use yii\web\Response;
 
 class CacheRefreshController extends Controller
 {
-
     protected array|bool|int $allowAnonymous = ['index'];
 
     // Public Methods
@@ -46,7 +45,7 @@ class CacheRefreshController extends Controller
 
         $secretHeader = $this->request->headers->get('cw-token');
 
-        if (is_null($secretHeader) || !App::env('CACHEWARMER_TOKEN')) {
+        if (is_null($secretHeader) || ! App::env('CACHEWARMER_TOKEN')) {
             throw new ForbiddenHttpException('Invalid secret');
         }
 
@@ -54,5 +53,4 @@ class CacheRefreshController extends Controller
             throw new ForbiddenHttpException('Invalid secret');
         }
     }
-
 }

@@ -16,28 +16,28 @@ class TriggerCachewarming extends BaseJob
     public function execute($queue): void
     {
         // abort if template caching is disabled
-        if (!Craft::$app->getConfig()->getGeneral()->enableTemplateCaching) {
+        if (! Craft::$app->getConfig()->getGeneral()->enableTemplateCaching) {
             return;
         }
 
-        if(Craft::$app->env === 'dev') {
+        if (Craft::$app->env === 'dev') {
             return;
         }
 
         $cwSiteId = App::env('CACHEWARMER_SITE_ID');
         $cwToken = App::env('CACHEWARMER_TOKEN');
 
-        if(!$cwSiteId || !$cwToken) {
+        if (! $cwSiteId || ! $cwToken) {
             return;
         }
 
         $client = new Client();
-        $client->post(self::CW_URL."/api/warm/{$cwSiteId}",[
+        $client->post(self::CW_URL."/api/warm/{$cwSiteId}", [
             'form_params' => [
                 'url' => $this->url,
             ],
             'headers' => [
-                'Authorization' => 'Bearer ' . $cwToken
+                'Authorization' => 'Bearer '.$cwToken,
             ],
         ]);
     }

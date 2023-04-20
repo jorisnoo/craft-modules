@@ -1,4 +1,5 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
 use Craft;
@@ -13,7 +14,7 @@ class MakeUsersEditors extends BaseModule
         Event::on(
             UsersController::class,
             UsersController::EVENT_AFTER_ASSIGN_GROUPS_AND_PERMISSIONS,
-            static function(UserEvent $event) {
+            static function (UserEvent $event) {
                 $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')->id ?? null;
                 if ($editorGroupId) {
                     Craft::$app->getUsers()->assignUserToGroups($event->user->id, [$editorGroupId]);

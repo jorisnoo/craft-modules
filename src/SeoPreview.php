@@ -1,4 +1,5 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
 use Craft;
@@ -13,7 +14,6 @@ use yii\base\Event;
 
 class SeoPreview extends BaseModule
 {
-
     public function attachEventHandlers(): void
     {
         $request = Craft::$app->getRequest();
@@ -24,7 +24,7 @@ class SeoPreview extends BaseModule
             Element::EVENT_REGISTER_PREVIEW_TARGETS,
             static function (RegisterPreviewTargetsEvent $event) {
                 $element = $event->sender;
-                if (!$element->getUrl()) {
+                if (! $element->getUrl()) {
                     return;
                 }
                 $event->previewTargets[] = [
@@ -38,13 +38,13 @@ class SeoPreview extends BaseModule
         );
 
         // Register preview site route
-        if (!Craft::$app->user->isGuest && $request->getIsSiteRequest() && !$request->getIsConsoleRequest()) {
+        if (! Craft::$app->user->isGuest && $request->getIsSiteRequest() && ! $request->getIsConsoleRequest()) {
 
             Event::on(
                 View::class,
                 View::EVENT_REGISTER_SITE_TEMPLATE_ROOTS,
-                static function(RegisterTemplateRootsEvent $event) {
-                    $event->roots['_jorisnoo'] = __DIR__ . '/templates';
+                static function (RegisterTemplateRootsEvent $event) {
+                    $event->roots['_jorisnoo'] = __DIR__.'/templates';
                 }
             );
 
@@ -59,5 +59,4 @@ class SeoPreview extends BaseModule
             );
         }
     }
-
 }

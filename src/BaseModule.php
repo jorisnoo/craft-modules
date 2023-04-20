@@ -1,4 +1,5 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
 use Craft;
@@ -20,7 +21,7 @@ abstract class BaseModule extends Module
         parent::init();
 
         // Defer most setup tasks until Craft is fully initialized
-        Craft::$app->onInit(function() {
+        Craft::$app->onInit(function () {
             $this->attachEventHandlers();
         });
     }
@@ -29,5 +30,4 @@ abstract class BaseModule extends Module
     {
         // Override this method in your module class to attach event handlers
     }
-
 }
