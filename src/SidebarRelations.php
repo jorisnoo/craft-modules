@@ -7,14 +7,15 @@ use craft\base\Element;
 use craft\elements\Category;
 use craft\elements\Entry;
 use craft\events\RegisterElementSourcesEvent;
-use craft\helpers\Json;
+use jorisnoo\CraftModules\traits\HasConfig;
 use yii\base\Event;
 
 class SidebarRelations extends BaseModule
 {
-    protected array $sources = [];
+    use HasConfig;
 
-    protected array $config = [];
+    protected string $moduleName = 'sidebarRelations';
+    protected array $sources = [];
 
     public function attachEventHandlers(): void
     {
@@ -31,44 +32,11 @@ class SidebarRelations extends BaseModule
         });
     }
 
-    public function getConfigCacheKey(): string
+    public function getCachedData(): array
     {
-        $configFromFile = Json::encode($this->config)
-            .collect($this->sources)->pluck('key')->join('');
-
-        return 'sidebarRelationsConfig_'.\md5($configFromFile);
+        return $this->getRelationSources();
     }
 
-    public function clearConfigCache(): void
-    {
-        Craft::$app->getCache()?->delete($this->getConfigCacheKey());
-    }
-
-    public function getConfig(): array
-    {
-        $isDevMode = Craft::$app->getConfig()->getGeneral()->devMode;
-        $cacheKey = $this->getConfigCacheKey();
-        $cache = Craft::$app->getCache();
-
-        if ($isDevMode) {
-            $cachedConfig = null;
-            $this->clearConfigCache();
-        } else {
-            $cachedConfig = $cache->get($cacheKey) ?? [];
-        }
-
-        if ($cachedConfig) {
-            return $cachedConfig;
-        }
-
-        $config = $this->getRelationSources() ?? [];
-
-        if (! $isDevMode) {
-            $cache->set($cacheKey, $config);
-        }
-
-        return $config;
-    }
 
     public function getRelationSources(): array
     {
@@ -122,7 +90,10 @@ class SidebarRelations extends BaseModule
                         ],
                         'criteria' => [
                             'sectionId' => $this->sources[$sourceKey]['criteria']['sectionId'],
-                            'relatedTo' => $relatedEntry,
+                            'relatedTo' => [
+                                'targetElement' => $relatedEntry,
+                                ...$filter['field'] ? ['field' => $filter['field']] : [],
+                            ],
                         ],
                     ];
                 }
