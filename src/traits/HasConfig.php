@@ -9,37 +9,42 @@ trait HasConfig
 {
     protected array $config = [];
 
-    public function getConfigCacheKey(): string
+    public function getConfig(): array
+    {
+        return Craft::$app->getConfig()->getConfigFromFile($this->configFile) ?? [];
+    }
+
+    public function getCacheKey(): string
     {
         $configFromFile = Json::encode($this->config)
             .collect($this->sources)->pluck('key')->join('');
 
-        return $this->moduleName.'Config_'.\md5($configFromFile);
+        return $this->configFile.'_Config_'.\md5($configFromFile);
     }
 
-    public function clearConfigCache(): void
+    public function clearCachedData(): void
     {
-        Craft::$app->getCache()?->delete($this->getConfigCacheKey());
+        Craft::$app->getCache()?->delete($this->getCacheKey());
     }
 
-    public function getConfig(): array
+    public function getCachedData()
     {
         $isDevMode = Craft::$app->getConfig()->getGeneral()->devMode;
-        $cacheKey = $this->getConfigCacheKey();
+        $cacheKey = $this->getCacheKey();
         $cache = Craft::$app->getCache();
         $cachedConfig = null;
 
         if (! $isDevMode && $cache) {
             $cachedConfig = $cache->get($cacheKey) ?? [];
         } else {
-            $this->clearConfigCache();
+            $this->clearCachedData();
         }
 
         if ($cachedConfig) {
             return $cachedConfig;
         }
 
-        $config = $this->getCachedData();
+        $config = $this->moduleData();
 
         if (! $isDevMode && $cache) {
             $cache->set($cacheKey, $config);

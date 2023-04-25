@@ -14,7 +14,7 @@ class SidebarRelations extends BaseModule
 {
     use HasConfig;
 
-    protected string $moduleName = 'sidebarRelations';
+    protected string $configFile = 'sidebar-relations';
     protected array $sources = [];
 
     public function attachEventHandlers(): void
@@ -22,23 +22,16 @@ class SidebarRelations extends BaseModule
         Event::on(Entry::class, Element::EVENT_REGISTER_SOURCES, function (RegisterElementSourcesEvent $event) {
 
             $this->sources = $event->sources;
-            $this->config = Craft::$app->getConfig()->getConfigFromFile('sidebar-relations') ?? [];
-            $entrySources = $this->getConfig();
+            $this->config = $this->getConfig();
+            $entrySources = $this->getCachedData();
 
             foreach ($entrySources as $key => $nestedSources) {
                 $event->sources[$key]['nested'] = $nestedSources;
             }
-
         });
     }
 
-    public function getCachedData(): array
-    {
-        return $this->getRelationSources();
-    }
-
-
-    public function getRelationSources(): array
+    public function moduleData(): array
     {
         return collect($this->config)
             ->map(function ($filter) {
