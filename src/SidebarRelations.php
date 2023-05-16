@@ -85,7 +85,7 @@ class SidebarRelations extends BaseModule
                             'sectionId' => $this->sources[$sourceKey]['criteria']['sectionId'],
                             'relatedTo' => [
                                 'targetElement' => $relatedEntry,
-                                ...$filter['field'] ? ['field' => $filter['field']] : [],
+                                ...isset($filter['field']) ? ['field' => $filter['field']] : [],
                             ],
                         ],
                     ];
