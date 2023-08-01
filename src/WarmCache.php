@@ -30,9 +30,17 @@ class WarmCache extends BaseModule
             Entry::class,
             Entry::EVENT_AFTER_SAVE,
             function (ModelEvent $event) {
-                if ($event->sender->enabled && $event->sender->url && $event->sender->getEnabledForSite() && ! $event->sender->getIsRevision()) {
+                $entry = $event->sender;
+                if (
+                    $entry->enabled
+                    && $entry->url
+                    && !$entry->resaving
+                    && !$entry->propagating
+                    && $entry->getEnabledForSite()
+                    && !$entry->getIsRevision()
+                ) {
                     Queue::push(new TriggerCachewarming([
-                        'url' => $event->sender->url,
+                        'url' => $entry->url,
                     ]));
                 }
             }

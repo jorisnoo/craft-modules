@@ -15,10 +15,10 @@ class TriggerCachewarming extends BaseJob
 
     public function execute($queue): void
     {
-        // abort if template caching is disabled
-        if (! Craft::$app->getConfig()->getGeneral()->enableTemplateCaching) {
-            return;
-        }
+        // do not abort if template caching is disabled, cuz we want to preload them images
+        //if (! Craft::$app->getConfig()->getGeneral()->enableTemplateCaching) {
+        //    return;
+        //}
 
         if (Craft::$app->env === 'dev') {
             return;
