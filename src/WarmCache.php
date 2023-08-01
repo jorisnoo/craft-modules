@@ -8,6 +8,7 @@ use craft\elements\Entry;
 use craft\events\ModelEvent;
 use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\App;
+use craft\helpers\ElementHelper;
 use craft\helpers\Queue;
 use craft\web\UrlManager;
 use jorisnoo\CraftModules\jobs\TriggerCachewarming;
@@ -32,12 +33,13 @@ class WarmCache extends BaseModule
             function (ModelEvent $event) {
                 $entry = $event->sender;
                 if (
-                    $entry->enabled
+                    !ElementHelper::isDraft($entry) &&
+                    !($entry->duplicateOf && $entry->getIsCanonical() && !$entry->updatingFromDerivative) &&
+                    ($entry->enabled && $entry->getEnabledForSite()) &&
+                    !$entry->propagating &&
+                    !ElementHelper::rootElement($entry)->isProvisionalDraft &&
+                    !ElementHelper::isRevision($entry)
                     && $entry->url
-                    && !$entry->resaving
-                    && !$entry->propagating
-                    && $entry->getEnabledForSite()
-                    && !$entry->getIsRevision()
                 ) {
                     Queue::push(new TriggerCachewarming([
                         'url' => $entry->url,
