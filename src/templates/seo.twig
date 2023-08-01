@@ -26,7 +26,7 @@
      }">
     <div id="google" class="metadata-group__display is-active">
 
-        <h4 class="metadata-group__title"><span>Google</span></h4>
+        <h4 class="metadata-group__title"><span>Search Engines</span></h4>
 
         <div class="card-seo-google">
             <span class="card-seo-google__title js-preview-title" x-text="pageTitle"></span>
@@ -40,9 +40,8 @@
         </div>
     </div>
 
-
     <div id="facebook" class="metadata-group__display is-active">
-        <h4 class="metadata-group__title"><span>Facebook</span></h4>
+        <h4 class="metadata-group__title"><span>Social Media</span></h4>
         <div class="card-seo-facebook">
             <div class="card-seo-facebook__image js-preview-image" :style="{ backgroundImage: 'url(' + image + ')'}"></div>
             <div class="card-seo-facebook__text">
@@ -53,18 +52,6 @@
                     </div>
                     <span class="card-seo-facebook__description js-preview-description" x-text="description"></span>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="twitter" class="metadata-group__display is-active">
-        <h4 class="metadata-group__title"><span>Twitter</span></h4>
-        <div class="card-seo-twitter">
-            <div class="card-seo-twitter__image js-preview-image" :style="{ backgroundImage: 'url(' + image + ')'}"></div>
-            <div class="card-seo-twitter__text">
-                <span class="card-seo-twitter__title js-preview-title" x-text="metaTitle"></span>
-                <span class="card-seo-twitter__description js-preview-description" x-text="description"></span>
-                <span class="card-seo-twitter__link js-preview-domain">{{ craft.app.request.hostName }}</span>
             </div>
         </div>
     </div>
