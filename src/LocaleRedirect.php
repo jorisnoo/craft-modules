@@ -45,7 +45,7 @@ class LocaleRedirect extends BaseModule
 
                 $redirectUrl = $localesHasStringKeys ? $locales[$lang] : $lang;
 
-                header("Location: /{$redirectUrl}", true, 302);
+                header("Location: /{$redirectUrl}/", true, 302);
                 exit();
             }
         );
