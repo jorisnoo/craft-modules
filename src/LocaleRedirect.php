@@ -6,6 +6,7 @@ use craft\web\twig\variables\CraftVariable;
 use jorisnoo\CraftModules\traits\HasConfig;
 use koenster\PHPLanguageDetection\BrowserLocalization;
 use yii\base\Event;
+use craft\web\Application;
 
 class LocaleRedirect extends BaseModule
 {
@@ -16,8 +17,8 @@ class LocaleRedirect extends BaseModule
     public function attachEventHandlers(): void
     {
         Event::on(
-            CraftVariable::class,
-            CraftVariable::EVENT_INIT,
+            Application::class,
+            Application::EVENT_INIT,
             function (Event $event) {
                 $request = Craft::$app->getRequest();
 
