@@ -17,6 +17,12 @@ class Flare extends BaseModule
 {
     public function attachEventHandlers(): void
     {
+        $isLocal = App::env('CRAFT_ENVIRONMENT') === 'dev';
+
+        if($isLocal || !App::env('FLARE_KEY')) {
+            return;
+        }
+
         $flare = FlareClient::make(App::env('FLARE_KEY'))
 //            ->setStage(Craft::$app->getConfig()->env)
 //            ->registerErrorHandler()
@@ -31,7 +37,7 @@ class Flare extends BaseModule
                 !($exception instanceof IntegrityException)
             )
         );
-        
+
         Event::on(
             ErrorHandler::class,
             ErrorHandler::EVENT_BEFORE_HANDLE_EXCEPTION,
