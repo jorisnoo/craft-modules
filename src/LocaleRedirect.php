@@ -1,4 +1,5 @@
 <?php
+
 namespace jorisnoo\CraftModules;
 
 use Craft;
@@ -16,41 +17,45 @@ class LocaleRedirect extends BaseModule
 
     public function attachEventHandlers(): void
     {
-        Event::on(
-            Application::class,
-            Application::EVENT_INIT,
-            function (Event $event) {
-                $request = Craft::$app->getRequest();
+        $request = Craft::$app->getRequest();
 
-                if (
-                    !$request->isSiteRequest
-                    || $request->isPreview
-                    || $request->getFullUri() !== ''
-                ) {
-                    return;
-                }
+        if (
+            $request->getIsSiteRequest()
+            && $request->getFullUri() === ''
+            && $request->method === 'GET'
+            && !$request->getIsActionRequest()
+            && !$request->getIsPreview()
+            && !$request->getIsLivePreview()
+        ) {
 
-                $this->config = $this->getConfig();
-                $locales = $this->config['locales'];
+            $this->config = $this->getConfig();
+            $locales = $this->config['locales'];
 
-                $localeKeys = array_keys($locales);
-                $localesHasStringKeys = count(array_filter($localeKeys, 'is_string')) > 0;
-                $availableLocales = $localesHasStringKeys ? $localeKeys : $locales;
+            $localeKeys = array_keys($locales);
+            $localesHasStringKeys = count(array_filter($localeKeys, 'is_string')) > 0;
+            $availableLocales = $localesHasStringKeys ? $localeKeys : $locales;
 
-                $browser = new BrowserLocalization();
+            /**
+             * $localesHasStringKeys is true if the array has string keys, e.g.:
+             * 'de' => 'de-DE', 'en' => 'en-US'
+             *
+             * it is false if the array has numeric keys, e.g.:
+             * ['de-DE', 'en-US'],
+             */
 
-                $browser->setAvailable($availableLocales)
-                    ->setDefault($this->config['default'] ?? $availableLocales[0])
-                    ->setPreferences($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null);
+            $browser = new BrowserLocalization();
 
-                $lang = $browser->detect();
+            $browser->setAvailable($availableLocales)
+                ->setDefault($this->config['default'] ?? $availableLocales[0])
+                ->setPreferences($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null);
 
-                $redirectUrl = $localesHasStringKeys ? $locales[$lang] : $lang;
+            $lang = $browser->detect();
 
-                header("Location: /{$redirectUrl}/", true, 302);
-                exit();
-            }
-        );
+            $redirectUrl = $localesHasStringKeys ? $locales[$lang] : $lang;
+
+            header("Location: /{$redirectUrl}/", true, 302);
+            exit();
+        }
     }
 
 }
