@@ -32,6 +32,7 @@ class LocaleRedirect extends BaseModule
 
                 $this->config = $this->getConfig();
                 $locales = $this->config['locales'];
+
                 $localeKeys = array_keys($locales);
                 $localesHasStringKeys = count(array_filter($localeKeys, 'is_string')) > 0;
                 $availableLocales = $localesHasStringKeys ? $localeKeys : $locales;

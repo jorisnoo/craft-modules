@@ -13,6 +13,11 @@ class TriggerCachewarming extends BaseJob
 
     public const CW_URL = 'https://cachewarmer.app';
 
+    public function getDescription(): string
+    {
+        return 'Triggering Cache Refresh for '.$this->url;
+    }
+
     public function execute($queue): void
     {
         // do not abort if template caching is disabled, cuz we want to preload them images
