@@ -20,7 +20,8 @@ class LocaleRedirect extends BaseModule
         $request = Craft::$app->getRequest();
 
         if (
-            $request->getIsSiteRequest()
+            Craft::$app->env !== 'testing'
+            && $request->getIsSiteRequest()
             && $request->getFullUri() === ''
             && $request->method === 'GET'
             && !$request->getIsActionRequest()
