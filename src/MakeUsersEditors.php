@@ -1,6 +1,6 @@
 <?php
 
-namespace jorisnoo\CraftModules;
+namespace Noo\CraftModules;
 
 use Craft;
 use craft\controllers\UsersController;

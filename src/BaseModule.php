@@ -1,6 +1,6 @@
 <?php
 
-namespace jorisnoo\CraftModules;
+namespace Noo\CraftModules;
 
 use Craft;
 use yii\base\Module;
@@ -9,7 +9,7 @@ abstract class BaseModule extends Module
 {
     public function init()
     {
-        Craft::setAlias('@jorisnoo/CraftModules', __DIR__);
+        Craft::setAlias('@Noo/CraftModules', __DIR__);
 
         parent::init();
 
