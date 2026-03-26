@@ -38,10 +38,10 @@ class EnvironmentIndicator extends BaseModule
                     a#system-info:hover {
                         background-color: {$hoverColor};
                     }
-                    body[data-sidebar="collapsed"] .global-sidebar__header::after {
+                    body[data-sidebar="collapsed"] a#system-info::after {
                         display: none;
                     }
-                    .global-sidebar__header::after {
+                    a#system-info::after {
                         content: '⚠️';
                         position: absolute;
                         right: 10px;
