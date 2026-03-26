@@ -23,6 +23,10 @@ Colors the CP sidebar header on non-production environments and shows a warning 
 - Any other non-production value (e.g. `staging`) — amber (`#f3b737`)
 - `production` — no indicator
 
+### CpCss
+
+Injects custom login page styles into the control panel (white background, black submit button, hidden header, constrained logo size).
+
 ### MakeUsersEditors
 
 Automatically assigns new users to the `editor` user group after group/permission assignment.
@@ -55,11 +59,13 @@ return [
         'make-users-editors' => Noo\CraftModules\MakeUsersEditors::class,
         'analytics-nav-link' => Noo\CraftModules\AnalyticsNavLink::class,
         'environment-indicator' => Noo\CraftModules\EnvironmentIndicator::class,
+        'cp-css' => Noo\CraftModules\CpCss::class,
     ],
     'bootstrap' => [
         'make-users-editors',
         'analytics-nav-link',
         'environment-indicator',
+        'cp-css',
     ],
 ];
 ```
