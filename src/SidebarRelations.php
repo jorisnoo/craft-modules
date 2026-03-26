@@ -15,6 +15,7 @@ class SidebarRelations extends BaseModule
     use HasConfig;
 
     protected string $configFile = 'sidebar-relations';
+
     protected array $sources = [];
 
     public function attachEventHandlers(): void
@@ -35,7 +36,7 @@ class SidebarRelations extends BaseModule
     {
         return collect($this->config)
             ->map(function ($filter) {
-                $filter['sectionUid'] = Craft::$app->sections->getSectionByHandle($filter['section'])?->uid ?? null;
+                $filter['sectionUid'] = Craft::$app->getEntries()->getSectionByHandle($filter['section'])?->uid ?? null;
 
                 return $filter;
             })
@@ -49,6 +50,13 @@ class SidebarRelations extends BaseModule
                 }
 
                 $relationType = $filter['relationType'] ?? Entry::class;
+
+                if ($relationType === Category::class) {
+                    Craft::$app->getDeprecator()->log(
+                        'sidebar-relations-category',
+                        'Category relationType is deprecated. Migrate with `php craft entrify/categories` and switch to Entry::class.'
+                    );
+                }
 
                 $query = match ($relationType) {
                     Category::class => 'group',

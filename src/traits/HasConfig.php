@@ -17,7 +17,7 @@ trait HasConfig
     public function getCacheKey(): string
     {
         $configFromFile = Json::encode($this->config)
-            .collect($this->sources)->pluck('key')->join('');
+            .(property_exists($this, 'sources') ? collect($this->sources)->pluck('key')->join('') : '');
 
         return $this->configFile.'_Config_'.\md5($configFromFile);
     }
@@ -52,5 +52,4 @@ trait HasConfig
 
         return $config;
     }
-
 }

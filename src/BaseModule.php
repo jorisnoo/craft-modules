@@ -11,13 +11,6 @@ abstract class BaseModule extends Module
     {
         Craft::setAlias('@jorisnoo/CraftModules', __DIR__);
 
-        // Set the controllerNamespace based on whether this is a console or web request
-        if (Craft::$app->request->isConsoleRequest) {
-            $this->controllerNamespace = 'jorisnoo\\CraftModules\\console\\controllers';
-        } else {
-            $this->controllerNamespace = 'jorisnoo\\CraftModules\\controllers';
-        }
-
         parent::init();
 
         // Defer most setup tasks until Craft is fully initialized
