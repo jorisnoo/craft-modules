@@ -15,7 +15,7 @@ class MakeUsersEditors extends BaseModule
             UsersController::class,
             UsersController::EVENT_AFTER_ASSIGN_GROUPS_AND_PERMISSIONS,
             static function (UserEvent $event) {
-                $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')->id ?? null;
+                $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')?->id;
                 if ($editorGroupId) {
                     Craft::$app->getUsers()->assignUserToGroups($event->user->id, [$editorGroupId]);
                 }
