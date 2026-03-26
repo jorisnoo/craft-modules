@@ -31,11 +31,11 @@ class EnvironmentIndicator extends BaseModule
 
                 Craft::$app->getView()->registerCss(
                     <<<CSS
-                    .global-sidebar__header {
+                    a#system-info {
                         position: relative;
                         background-color: {$color};
                     }
-                    .global-sidebar__header:hover {
+                    a#system-info:hover {
                         background-color: {$hoverColor};
                     }
                     body[data-sidebar="collapsed"] .global-sidebar__header::after {
