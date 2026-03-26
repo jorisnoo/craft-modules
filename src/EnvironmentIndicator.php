@@ -17,12 +17,14 @@ class EnvironmentIndicator extends BaseModule
             return;
         }
 
-        $color = $environment === 'dev' ? '#00d0ff' : '#f3b737';
+        [$color, $hoverColor] = $environment === 'dev'
+            ? ['#00d0ff', '#00b8e0']
+            : ['#f3b737', '#e0a520'];
 
         Event::on(
             View::class,
             View::EVENT_BEFORE_RENDER_PAGE_TEMPLATE,
-            function () use ($color) {
+            function () use ($color, $hoverColor) {
                 if (! Craft::$app->getUser()->getIdentity()) {
                     return;
                 }
@@ -32,6 +34,12 @@ class EnvironmentIndicator extends BaseModule
                     .global-sidebar__header {
                         position: relative;
                         background-color: {$color};
+                    }
+                    .global-sidebar__header:hover {
+                        background-color: {$hoverColor};
+                    }
+                    body[data-sidebar="collapsed"] .global-sidebar__header::after {
+                        display: none;
                     }
                     .global-sidebar__header::after {
                         content: '⚠️';
