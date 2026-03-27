@@ -41,15 +41,6 @@ class EnvironmentIndicator extends BaseModule
                     body[data-sidebar="collapsed"] a#system-info::after {
                         display: none;
                     }
-                    a#system-info::after {
-                        content: '⚠️';
-                        position: absolute;
-                        right: 10px;
-                        top: 50%;
-                        transform: translateY(-50%);
-                        font-size: 18px;
-                        line-height: 1;
-                    }
                     CSS
                 );
             }
