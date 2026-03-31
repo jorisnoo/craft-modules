@@ -1,35 +1,11 @@
 # Craft Modules
 
-Reusable Craft CMS 5 modules.
+A collection of small [Craft CMS](https://craftcms.com/) modules for control panel customization and workflow automation.
 
-## Modules
+## Requirements
 
-### AnalyticsNavLink
-
-Adds an external "Analytics" link to the CP navigation. Reads the URL from `config/custom.php`:
-
-```php
-// config/custom.php
-return [
-    'plausible_url' => 'https://plausible.io/example.com',
-];
-```
-
-### EnvironmentIndicator
-
-Colors the CP sidebar header on non-production environments and shows a warning icon. Uses `CRAFT_ENVIRONMENT` to determine the environment:
-
-- `dev` — cyan (`#00d0ff`)
-- Any other non-production value (e.g. `staging`) — amber (`#f3b737`)
-- `production` — no indicator
-
-### CpCss
-
-Injects custom login page styles into the control panel (white background, black submit button, hidden header, constrained logo size).
-
-### MakeUsersEditors
-
-Automatically assigns new users to the `editor` user group after group/permission assignment.
+- PHP 8.2+
+- Craft CMS 5
 
 ## Installation
 
@@ -38,7 +14,6 @@ Add the repository to your `composer.json`:
 ```json
 {
     "repositories": [{
-        "name": "craft-modules",
         "type": "vcs",
         "url": "https://github.com/jorisnoo/craft-modules.git"
     }]
@@ -49,23 +24,55 @@ Add the repository to your `composer.json`:
 composer require jorisnoo/craft-modules:dev-main
 ```
 
-## Registration
-
-Register modules in `config/app.php`:
+Then register the module in `config/app.php`:
 
 ```php
 return [
     'modules' => [
-        'make-users-editors' => Noo\CraftModules\MakeUsersEditors::class,
-        'analytics-nav-link' => Noo\CraftModules\AnalyticsNavLink::class,
-        'environment-indicator' => Noo\CraftModules\EnvironmentIndicator::class,
-        'cp-css' => Noo\CraftModules\CpCss::class,
+        'craft-modules' => \Noo\CraftModules\CraftModules::class,
     ],
-    'bootstrap' => [
-        'make-users-editors',
-        'analytics-nav-link',
-        'environment-indicator',
-        'cp-css',
-    ],
+    'bootstrap' => ['craft-modules'],
 ];
 ```
+
+All modules are bootstrapped automatically by the `CraftModules` entry point.
+
+## Modules
+
+### AnalyticsNavLink
+
+Adds an external "Analytics" link to the CP navigation, pointing to your Plausible dashboard. Set the URL via the `PLAUSIBLE_DASHBOARD_URL` environment variable. The link is only added when the variable is present.
+
+### EnvironmentIndicator
+
+Colors the CP sidebar header on non-production environments:
+
+- `dev` — cyan
+- Any other non-production value (e.g. `staging`) — amber
+- `production` — no indicator
+
+Uses the `CRAFT_ENVIRONMENT` env variable.
+
+### CpCss
+
+Injects custom styles on the CP login page (white background, black submit button, hidden header, constrained logo size).
+
+### CpNavItems
+
+Adjusts the default CP navigation: removes the Dashboard item and replaces the Oh Dear plugin icon with a built-in gauge icon.
+
+### FlareExceptionFilter
+
+Filters common HTTP exceptions (400, 403, 404) from Flare error reporting. Only activates when the `spatie/craft-flare` plugin is installed.
+
+### HideUserPermissions
+
+Removes the "Permissions" tab from the user edit screen.
+
+### MakeUsersEditors
+
+Automatically assigns users to the `editor` user group after group/permission assignment.
+
+## License
+
+The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.
