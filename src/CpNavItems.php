@@ -4,11 +4,10 @@ namespace Noo\CraftModules;
 
 use Craft;
 use craft\events\RegisterCpNavItemsEvent;
-use craft\helpers\App;
 use craft\web\twig\variables\Cp;
 use yii\base\Event;
 
-class AnalyticsNavLink extends BaseModule
+class CpNavItems extends BaseModule
 {
     public function attachEventHandlers(): void
     {
@@ -20,15 +19,16 @@ class AnalyticsNavLink extends BaseModule
             Cp::class,
             Cp::EVENT_REGISTER_CP_NAV_ITEMS,
             function (RegisterCpNavItemsEvent $event) {
-                $plausibleUrl = App::env('PLAUSIBLE_DASHBOARD_URL');
-                if ($plausibleUrl) {
-                    $event->navItems[] = [
-                        'label' => 'Analytics',
-                        'url' => $plausibleUrl,
-                        'fontIcon' => 'eye',
-                        'external' => true,
-                    ];
+                foreach ($event->navItems as $key => &$item) {
+                    $url = $item['url'] ?? '';
+                    if ($url === 'ohdear') {
+                        unset($item['icon']);
+                        $item['fontIcon'] = 'gauge';
+                    } elseif ($url === 'dashboard') {
+                        unset($event->navItems[$key]);
+                    }
                 }
+                unset($item);
             }
         );
     }
