@@ -10,7 +10,7 @@ use yii\console\ExitCode;
 class DbController extends Controller
 {
     /**
-     * @var int Number of backups to keep. Defaults to 5.
+     * @var int Number of backups to keep. Defaults to 10.
      */
     public int $keep = 10;
 
