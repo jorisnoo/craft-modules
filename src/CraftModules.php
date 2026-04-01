@@ -11,6 +11,10 @@ class CraftModules extends Module
     {
         Craft::setAlias('@Noo/CraftModules', __DIR__);
 
+        if (Craft::$app->getRequest()->getIsConsoleRequest()) {
+            $this->controllerNamespace = 'Noo\\CraftModules\\console\\controllers';
+        }
+
         parent::init();
 
         Craft::$app->onInit(function () {
