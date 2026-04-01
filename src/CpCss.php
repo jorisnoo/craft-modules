@@ -25,9 +25,8 @@ class CpCss extends BaseModule
                         background: #fff;
                         color: #000;
                     }
-                    body.login #login-logo {
-                        max-height: 100px;
-                        max-width: 100px;
+                    body.login main img#login-logo {
+                        max-width: 12rem;
                     }
                     body.login .login-container {
                         margin-top: 4rem;
