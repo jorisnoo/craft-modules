@@ -17,6 +17,13 @@ class CraftModules extends Module
 
         parent::init();
 
+        Craft::$app->setModules([
+            'craft-sitemap' => \Noo\CraftSitemap\Module::class,
+            'remote-sync' => \Noo\CraftRemoteSync\Module::class,
+        ]);
+        Craft::$app->getModule('craft-sitemap');
+        Craft::$app->getModule('remote-sync');
+
         Craft::$app->onInit(function () {
             $modules = [
                 new AnalyticsNavLink(),
