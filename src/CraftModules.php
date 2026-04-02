@@ -26,6 +26,7 @@ class CraftModules extends Module
                 new FlareExceptionFilter(),
                 new HideUserPermissions(),
                 new MakeUsersEditors(),
+                new TextSnippetTwigFunction(),
             ];
 
             foreach ($modules as $module) {

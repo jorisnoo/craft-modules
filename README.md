@@ -73,6 +73,15 @@ Removes the "Permissions" tab from the user edit screen.
 
 Automatically assigns users to the `editor` user group after group/permission assignment.
 
+### TextSnippetTwigFunction
+
+Registers a `textSnippet` Twig function that retrieves a text snippet from a Craft entry. Defaults to looking in the `translations` section.
+
+```twig
+{{ textSnippet('welcomeMessage') }}
+{{ textSnippet('label', 'customSection') }}
+```
+
 ## License
 
 The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.
