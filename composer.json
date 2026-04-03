@@ -17,7 +17,8 @@
         "craftcms/cms": "^5.0.0",
         "jorisnoo/craft-sitemap": "dev-main",
         "jorisnoo/craft-remote-sync": "dev-main",
-        "jorisnoo/craft-seo-preview": "dev-main"
+        "jorisnoo/craft-seo-preview": "dev-main",
+        "jorisnoo/craft-twig-helpers": "dev-main"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",

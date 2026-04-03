@@ -20,9 +20,11 @@ class CraftModules extends Module
         Craft::$app->setModules([
             'craft-sitemap' => \Noo\CraftSitemap\Module::class,
             'remote-sync' => \Noo\CraftRemoteSync\Module::class,
+            'twig-helpers' => \Noo\CraftTwigHelpers\TwigHelpers::class,
         ]);
         Craft::$app->getModule('craft-sitemap');
         Craft::$app->getModule('remote-sync');
+        Craft::$app->getModule('twig-helpers');
 
 
         Craft::$app->onInit(function () {
