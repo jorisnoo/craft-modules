@@ -24,6 +24,7 @@ class CraftModules extends Module
         Craft::$app->getModule('craft-sitemap');
         Craft::$app->getModule('remote-sync');
 
+
         Craft::$app->onInit(function () {
             $modules = [
                 new AnalyticsNavLink(),
