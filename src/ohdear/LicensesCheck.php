@@ -118,7 +118,9 @@ class LicensesCheck extends Check
     /** @return array{0: 'failed'|'warning'|'ok', 1: array} */
     private function classify(string $status, array $issues, bool $isTrial): array
     {
-        if ($status === LicenseKeyStatus::Invalid->value || in_array('invalid', $issues, true)) {
+        $expired = [LicenseKeyStatus::Invalid->value, LicenseKeyStatus::Astray->value];
+
+        if (in_array($status, $expired, true) || array_intersect($expired, $issues)) {
             return ['failed', $issues ?: [$status]];
         }
         if (!empty($issues)) {
