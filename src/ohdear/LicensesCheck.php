@@ -37,13 +37,15 @@ class LicensesCheck extends Check
     public function run(): CheckResult
     {
         $cache = Craft::$app->getCache();
-        $key = self::CACHE_KEY . ':' . md5(serialize([$this->ignore, $this->warnOnTrial]));
+        $licenseInfo = $cache->get(App::CACHE_KEY_LICENSE_INFO) ?: [];
+        $fingerprint = md5(serialize([$this->ignore, $this->warnOnTrial, $licenseInfo]));
+        $key = self::CACHE_KEY . ':' . $fingerprint;
 
         if ($this->cacheDuration > 0 && ($cached = $cache->get($key)) instanceof CheckResult) {
             return $cached;
         }
 
-        $result = $this->evaluate();
+        $result = $this->evaluate($licenseInfo);
 
         if ($this->cacheDuration > 0) {
             $cache->set($key, $result, $this->cacheDuration);
@@ -52,13 +54,11 @@ class LicensesCheck extends Check
         return $result;
     }
 
-    private function evaluate(): CheckResult
+    private function evaluate(array $licenseInfo): CheckResult
     {
         $failed = [];
         $warning = [];
         $ok = 0;
-
-        $licenseInfo = Craft::$app->getCache()->get(App::CACHE_KEY_LICENSE_INFO) ?: [];
 
         if (!in_array('craft', $this->ignore, true)) {
             $status = $licenseInfo['craft']['status'] ?? LicenseKeyStatus::Unknown->value;
