@@ -20,7 +20,7 @@ class MakeUsersEditors extends BaseModule
                 /** @var User $user */
                 $user = $event->sender;
 
-                if (!$event->isNew || $user->propagating || $user->resaving) {
+                if (!$user->firstSave || $user->propagating || $user->resaving) {
                     return;
                 }
 
