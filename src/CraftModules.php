@@ -49,7 +49,6 @@ class CraftModules extends Module
                 new CpNavItems(),
                 new EnvironmentIndicator(),
                 new FlareExceptionFilter(),
-                new HideUserPermissions(),
                 new MakeUsersEditors(),
                 new TextSnippetTwigFunction(),
             ];

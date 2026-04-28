@@ -65,10 +65,6 @@ Adjusts the default CP navigation: removes the Dashboard item and replaces the O
 
 Filters common HTTP exceptions (400, 403, 404) from Flare error reporting. Only activates when the `spatie/craft-flare` plugin is installed.
 
-### HideUserPermissions
-
-Removes the "Permissions" tab from the user edit screen.
-
 ### MakeUsersEditors
 
 Automatically assigns users to the `editor` user group after group/permission assignment.
