@@ -3,8 +3,10 @@
 namespace Noo\CraftModules;
 
 use Craft;
-use craft\controllers\UsersController;
-use craft\events\UserEvent;
+use craft\base\Element;
+use craft\elements\User;
+use craft\events\ModelEvent;
+use craft\helpers\ElementHelper;
 use yii\base\Event;
 
 class MakeUsersEditors extends BaseModule
@@ -12,13 +14,32 @@ class MakeUsersEditors extends BaseModule
     public function attachEventHandlers(): void
     {
         Event::on(
-            UsersController::class,
-            UsersController::EVENT_AFTER_ASSIGN_GROUPS_AND_PERMISSIONS,
-            static function (UserEvent $event) {
-                $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')?->id;
-                if ($editorGroupId) {
-                    Craft::$app->getUsers()->assignUserToGroups($event->user->id, [$editorGroupId]);
+            User::class,
+            Element::EVENT_AFTER_SAVE,
+            static function (ModelEvent $event) {
+                /** @var User $user */
+                $user = $event->sender;
+
+                if (!$event->isNew || $user->propagating || $user->resaving) {
+                    return;
                 }
+
+                if (ElementHelper::isDraftOrRevision($user)) {
+                    return;
+                }
+
+                $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')?->id;
+                if (!$editorGroupId) {
+                    return;
+                }
+
+                $groupIds = array_map(fn($g) => $g->id, $user->getGroups());
+                if (in_array($editorGroupId, $groupIds, false)) {
+                    return;
+                }
+
+                $groupIds[] = $editorGroupId;
+                Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds);
             }
         );
     }
