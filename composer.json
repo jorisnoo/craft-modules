@@ -15,10 +15,10 @@
     "require": {
         "php": "^8.2",
         "craftcms/cms": "^5.0.0",
-        "jorisnoo/craft-sitemap": "dev-main",
-        "jorisnoo/craft-remote-sync": "dev-main",
-        "jorisnoo/craft-seo-preview": "dev-main",
-        "jorisnoo/craft-twig-helpers": "dev-main"
+        "jorisnoo/craft-sitemap": "^1.0.0",
+        "jorisnoo/craft-remote-sync": "^2.0.0",
+        "jorisnoo/craft-seo-preview": "^1.0.0",
+        "jorisnoo/craft-twig-helpers": "^1.0.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
