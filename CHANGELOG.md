@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.1) (2026-05-14)
+
+### Features
+
+- add RedirectDashboard module to redirect CP dashboard to entries ([8efbde4](https://github.com/jorisnoo/craft-modules/commit/8efbde47d8ddd35fe0602e6c6ba504b81cab5cac))
+
+### Chores
+
+- add MIT license and package metadata ([aaf7ff9](https://github.com/jorisnoo/craft-modules/commit/aaf7ff959b517444c1f98a016691f61aaa4ea848))
 ## [2.0.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.0) (2026-05-12)
 
 ### ⚠ BREAKING CHANGES
