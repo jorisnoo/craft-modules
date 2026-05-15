@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.2) (2026-05-15)
+
+### Features
+
+- add FocalPointPicker module for selecting asset focal points ([c6b9bde](https://github.com/jorisnoo/craft-modules/commit/c6b9bdebe9724d47c96ec0d76250ca563f204695))
 ## [2.0.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.1) (2026-05-14)
 
 ### Features
