@@ -22,7 +22,7 @@
     },
     "require": {
         "php": "^8.2",
-        "craftcms/cms": "^5.0.0",
+        "craftcms/cms": "^5.9.0",
         "jorisnoo/craft-sitemap": "^1.0.0",
         "jorisnoo/craft-remote-sync": "^2.0.0",
         "jorisnoo/craft-seo-preview": "^1.0.0",

@@ -50,6 +50,7 @@ class CraftModules extends Module
                 new EnvironmentIndicator(),
                 new FlareExceptionFilter(),
                 new FocalPointPicker(),
+                new HideSlugWithoutUri(),
                 new MakeUsersEditors(),
                 new RedirectDashboard(),
                 new TextSnippetTwigFunction(),
