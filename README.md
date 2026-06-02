@@ -78,7 +78,13 @@ Registers a `textSnippet` Twig function that retrieves a text snippet from the s
 {{ textSnippet('label', 'customSection') }}
 ```
 
-It reads the snippet from a direct field instance on the entry (`handle`), and falls back to the legacy layout where the section's single holds one Matrix block (field handle == section name) carrying the snippets as its sub-fields. The section's single is fetched once per request and memoized per site.
+It reads the snippet from a direct field instance on the entry (`handle`), and falls back to the legacy layout where the section's single holds one Matrix block (field handle == section name) carrying the snippets as its sub-fields. The section's entries are fetched once per request and memoized per site.
+
+If a section spreads its snippets across several entry types, the lookup walks the section's entries and returns the value from whichever one carries the handle. Pass an entry type handle as the third argument to check that entry type first (it still falls back to the others):
+
+```twig
+{{ textSnippet('registrationConfirmed', 'newsletterStrings', 'newsletterVerificationEmail') }}
+```
 
 ## License
 

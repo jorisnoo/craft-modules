@@ -16,7 +16,7 @@ class TextSnippetTwigFunction extends BaseModule
         }
 
         Craft::$app->getView()->registerTwigExtension(new class extends AbstractExtension {
-            /** @var array<string, Entry|null> Per-request cache keyed by "section|siteId". */
+            /** @var array<string, Entry[]> Per-request cache of a section's entries, keyed by "section|siteId". */
             private array $entries = [];
 
             public function getFunctions(): array
@@ -26,14 +26,37 @@ class TextSnippetTwigFunction extends BaseModule
                 ];
             }
 
-            public function textSnippet(string $handle, string $sectionName = 'translations'): ?string
+            /**
+             * Returns a text snippet stored on the single (or one of the entries) of a section.
+             *
+             * The snippet may live on any entry type within the section, so the lookup walks
+             * the section's entries and returns the value from whichever one carries the handle.
+             * Pass $entryType to check that entry type first; it still falls back to the others.
+             */
+            public function textSnippet(string $handle, string $sectionName = 'translations', ?string $entryType = null): ?string
             {
-                $entry = $this->sectionEntry($sectionName);
+                $entries = $this->sectionEntries($sectionName);
 
-                if (! $entry) {
-                    return null;
+                // Prefer the explicitly requested entry type, then fall back to the rest.
+                if ($entryType !== null) {
+                    usort($entries, fn(Entry $a, Entry $b) => (
+                        ($b->getType()?->handle === $entryType) <=> ($a->getType()?->handle === $entryType)
+                    ));
                 }
 
+                foreach ($entries as $entry) {
+                    $value = $this->snippetFromEntry($entry, $handle, $sectionName);
+
+                    if ($value !== null) {
+                        return $value;
+                    }
+                }
+
+                return null;
+            }
+
+            private function snippetFromEntry(Entry $entry, string $handle, string $sectionName): ?string
+            {
                 $layout = $entry->getFieldLayout();
 
                 // Flat layout: a direct field-layout instance carries the snippet.
@@ -58,7 +81,8 @@ class TextSnippetTwigFunction extends BaseModule
                 return null;
             }
 
-            private function sectionEntry(string $sectionName): ?Entry
+            /** @return Entry[] */
+            private function sectionEntries(string $sectionName): array
             {
                 $siteId = Craft::$app->getSites()->getCurrentSite()->id;
                 $key = "$sectionName|$siteId";
@@ -67,7 +91,7 @@ class TextSnippetTwigFunction extends BaseModule
                     $this->entries[$key] = Entry::find()
                         ->section($sectionName)
                         ->siteId($siteId)
-                        ->one();
+                        ->all();
                 }
 
                 return $this->entries[$key];
