@@ -71,12 +71,14 @@ Automatically assigns users to the `editor` user group after group/permission as
 
 ### TextSnippetTwigFunction
 
-Registers a `textSnippet` Twig function that retrieves a text snippet from a Craft entry. Defaults to looking in the `translations` section.
+Registers a `textSnippet` Twig function that retrieves a text snippet from the single entry of a section. Defaults to looking in the `translations` section.
 
 ```twig
 {{ textSnippet('welcomeMessage') }}
 {{ textSnippet('label', 'customSection') }}
 ```
+
+It reads the snippet from a direct field instance on the entry (`handle`), and falls back to the legacy layout where the section's single holds one Matrix block (field handle == section name) carrying the snippets as its sub-fields. The section's single is fetched once per request and memoized per site.
 
 ## License
 
