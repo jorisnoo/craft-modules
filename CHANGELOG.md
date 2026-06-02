@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.3) (2026-06-02)
+
+### Features
+
+- add dual-layout support to TextSnippetTwigFunction with per-request memoization ([f351060](https://github.com/jorisnoo/craft-modules/commit/f351060e7d0b5a97bc108bc7d8b89534d7de1e59))
 ## [2.0.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.2) (2026-05-15)
 
 ### Features
