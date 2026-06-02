@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.4) (2026-06-02)
+
+### Features
+
+- add HideSlugWithoutUri module to hide slug field from entries without URI format ([3e5b61a](https://github.com/jorisnoo/craft-modules/commit/3e5b61aa7ea988e925288e5e0bd64ed8409ad937))
+- **TextSnippetTwigFunction:** support multi-entry-type snippets with optional type priority ([22e64f1](https://github.com/jorisnoo/craft-modules/commit/22e64f198bbdef5a4faba70b76329627214079e4))
 ## [2.0.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.3) (2026-06-02)
 
 ### Features
