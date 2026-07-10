@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.5) (2026-07-10)
+
+### Bug Fixes
+
+- **LicensesCheck:** treat Unknown license status as warning, not ok ([be60dac](https://github.com/jorisnoo/craft-modules/commit/be60dac7c5999d1668ed19bb9c4892f432d0ea5e))
+
+### Build System
+
+- **deps:** bump actions/checkout from 6 to 7 ([834a962](https://github.com/jorisnoo/craft-modules/commit/834a96280ef5bd6eaa4e5e1bb0cba92aa713b8b5))
 ## [2.0.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.4) (2026-06-02)
 
 ### Features
