@@ -123,6 +123,9 @@ class LicensesCheck extends Check
         if (in_array($status, $expired, true) || array_intersect($expired, $issues)) {
             return ['failed', $issues ?: [$status]];
         }
+        if ($status === LicenseKeyStatus::Unknown->value) {
+            return ['warning', ['unknown']];
+        }
         if (!empty($issues)) {
             return ['warning', $issues];
         }
