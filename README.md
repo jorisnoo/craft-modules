@@ -86,6 +86,36 @@ If a section spreads its snippets across several entry types, the lookup walks t
 {{ textSnippet('registrationConfirmed', 'newsletterStrings', 'newsletterVerificationEmail') }}
 ```
 
+### Deployment cache command
+
+The zero-argument deployment command compares the current Git commit with the last successful
+deployment, clears only affected Craft caches, and refreshes Blitz when rendered pages may have
+changed:
+
+```bash
+php craft craft-modules/deploy
+```
+
+Queueing is enabled and interaction is disabled by default. On Forge, state is stored at
+`$FORGE_SITE_ROOT/.deploy-state/blitz-commit`; elsewhere it falls back to
+`@storage/runtime/blitz-deploy/commit`. Blitz is optional and is skipped when it is not installed.
+
+The command performs a conservative full clear and Blitz refresh on its first run or when the
+previous commit is unavailable. Later runs map template, frontend, configuration, module,
+migration, Composer, and package changes to the relevant caches. Unrelated changes require no
+cache work.
+
+Available overrides:
+
+```bash
+php craft craft-modules/deploy --dry-run
+php craft craft-modules/deploy --force
+php craft craft-modules/deploy --queue=0
+php craft craft-modules/deploy --interactive=1
+php craft craft-modules/deploy --from=<commit> --to=<commit>
+php craft craft-modules/deploy --state-file=/custom/path
+```
+
 ## License
 
 The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.

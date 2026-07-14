@@ -1,5 +1,6 @@
 {
     "name": "jorisnoo/craft-modules",
+    "description": "Shared Craft CMS modules for control panel customization, deployment, and workflow automation.",
     "type": "craft-module",
     "license": "MIT",
     "keywords": [
@@ -26,7 +27,8 @@
         "jorisnoo/craft-sitemap": "^1.0.0",
         "jorisnoo/craft-remote-sync": "^2.0.0",
         "jorisnoo/craft-seo-preview": "^1.0.0",
-        "jorisnoo/craft-twig-helpers": "^1.0.0"
+        "jorisnoo/craft-twig-helpers": "^1.0.0",
+        "symfony/process": "^6.4 || ^7.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-latest",
