@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.7](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.7) (2026-07-14)
+
+### Features
+
+- **deploy:** fetch missing commits from remote during shallow deployments ([4b5278e](https://github.com/jorisnoo/craft-modules/commit/4b5278e01f1a9af9a8230c4075afaa496c8c6b6d))
 ## [2.0.6](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.6) (2026-07-14)
 
 ### Features
