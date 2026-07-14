@@ -15,8 +15,6 @@ use yii\console\ExitCode;
 
 class DeployController extends Controller
 {
-    public $interactive = false;
-
     public bool $queue = true;
 
     public bool $force = false;
@@ -126,7 +124,7 @@ class DeployController extends Controller
         }
 
         [$controller, $actionId] = $result;
-        $controller->interactive = false;
+        $controller->interactive = $this->interactive;
 
         foreach ($options as $name => $value) {
             $controller->{$name} = $value;

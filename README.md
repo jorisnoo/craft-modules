@@ -96,7 +96,7 @@ changed:
 php craft craft-modules/deploy
 ```
 
-Queueing is enabled and interaction is disabled by default. On Forge, state is stored at
+Queueing is enabled by default. On Forge, state is stored at
 `$FORGE_SITE_ROOT/.deploy-state/blitz-commit`; elsewhere it falls back to
 `@storage/runtime/blitz-deploy/commit`. Blitz is optional and is skipped when it is not installed.
 
@@ -111,7 +111,7 @@ Available overrides:
 php craft craft-modules/deploy --dry-run
 php craft craft-modules/deploy --force
 php craft craft-modules/deploy --queue=0
-php craft craft-modules/deploy --interactive=1
+php craft craft-modules/deploy --interactive=0
 php craft craft-modules/deploy --from=<commit> --to=<commit>
 php craft craft-modules/deploy --state-file=/custom/path
 ```
