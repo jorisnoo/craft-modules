@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.6](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.6) (2026-07-14)
+
+### Features
+
+- **deploy:** add zero-argument deployment cache command ([52bd883](https://github.com/jorisnoo/craft-modules/commit/52bd883de93d63ab2e82d0a7e28ef6aec75739e1))
+
+### Bug Fixes
+
+- **deploy:** respect configured interactive flag ([a41683d](https://github.com/jorisnoo/craft-modules/commit/a41683d0d691de8f68ccc09dcda7369df504b07d))
 ## [2.0.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.5) (2026-07-10)
 
 ### Bug Fixes
