@@ -116,6 +116,33 @@ php craft craft-modules/deploy --from=<commit> --to=<commit>
 php craft craft-modules/deploy --state-file=/custom/path
 ```
 
+### Cached frontend builds
+
+The deploy controller can skip npm installation and compilation when the exact frontend inputs
+have already been built:
+
+```bash
+php craft craft-modules/deploy/build
+```
+
+It fingerprints `package.json`, npm lock/config files, Vite `.env` files, everything in `src/` and
+`templates/`, and common Vite, Tailwind, PostCSS, Webpack, and TypeScript/JavaScript config files.
+Symlinked inputs are followed and their target contents are included. On a cache hit it restores
+`web/dist`; on a miss it runs `npm ci` and `npm run build`, verifies
+`web/dist/.vite/manifest.json`, and stores the result. The five most recent builds are retained.
+
+On Forge, builds are cached in `$FORGE_SITE_ROOT/.deploy-cache/frontend-builds`, outside individual
+releases. Elsewhere the default is `@storage/runtime/deploy-build-cache`. Use these overrides to
+inspect or control it:
+
+```bash
+php craft craft-modules/deploy/build --dry-run
+php craft craft-modules/deploy/build --force
+php craft craft-modules/deploy/build --build-cache-dir=/persistent/path
+```
+
+The three original deploy-script lines can therefore be replaced with the single build command.
+
 ## License
 
 The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.
