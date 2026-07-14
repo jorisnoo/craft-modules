@@ -66,7 +66,7 @@ class DeployController extends Controller
                 $plan = $planner->full('A full refresh was forced.');
             } elseif ($previousCommit === null) {
                 $plan = $planner->full('No previous successful deployment was recorded.');
-            } elseif (! $git->commitExists($previousCommit)) {
+            } elseif (! $git->fetchCommit($previousCommit)) {
                 $plan = $planner->full("The previous commit $previousCommit is unavailable in this clone.");
             } else {
                 $plan = $planner->plan($git->changedFiles($previousCommit, $currentCommit));

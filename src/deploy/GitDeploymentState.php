@@ -22,6 +22,25 @@ final class GitDeploymentState
         return $process->isSuccessful();
     }
 
+    public function fetchCommit(string $revision, string $remote = 'origin'): bool
+    {
+        if ($this->commitExists($revision)) {
+            return true;
+        }
+
+        $process = $this->process([
+            'fetch',
+            '--quiet',
+            '--no-tags',
+            '--depth=1',
+            $remote,
+            $revision,
+        ]);
+        $process->run();
+
+        return $process->isSuccessful() && $this->commitExists($revision);
+    }
+
     /**
      * @return string[]
      */

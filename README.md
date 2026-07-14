@@ -100,10 +100,10 @@ Queueing is enabled by default. On Forge, state is stored at
 `$FORGE_SITE_ROOT/.deploy-state/blitz-commit`; elsewhere it falls back to
 `@storage/runtime/blitz-deploy/commit`. Blitz is optional and is skipped when it is not installed.
 
-The command performs a conservative full clear and Blitz refresh on its first run or when the
-previous commit is unavailable. Later runs map template, frontend, configuration, module,
-migration, Composer, and package changes to the relevant caches. Unrelated changes require no
-cache work.
+The command fetches the single previous commit when a shallow deployment clone does not contain
+it. It performs a conservative full clear and Blitz refresh on its first run or when that commit
+remains unavailable. Later runs map template, frontend, configuration, module, migration,
+Composer, and package changes to the relevant caches. Unrelated changes require no cache work.
 
 Available overrides:
 
