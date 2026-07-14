@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.0) (2026-07-14)
+
+### Features
+
+- **deploy:** add frontend build cache ([3c347af](https://github.com/jorisnoo/craft-modules/commit/3c347afc43a13221b7f1c017a44c3699ec0f8789))
 ## [2.0.7](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.7) (2026-07-14)
 
 ### Features
