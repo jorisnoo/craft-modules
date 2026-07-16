@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.1) (2026-07-16)
+
+### Code Refactoring
+
+- extract text snippet value handler and add plugins directory caching ([3d82370](https://github.com/jorisnoo/craft-modules/commit/3d82370968231604a7ff16aa9af065f15165afe4))
 ## [2.1.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.0) (2026-07-14)
 
 ### Features
