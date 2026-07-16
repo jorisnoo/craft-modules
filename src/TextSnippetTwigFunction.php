@@ -61,9 +61,7 @@ class TextSnippetTwigFunction extends BaseModule
 
                 // Flat layout: a direct field-layout instance carries the snippet.
                 if ($layout?->getFieldByHandle($handle) !== null) {
-                    $value = $entry->getFieldValue($handle);
-
-                    return is_string($value) && $value !== '' ? $value : null;
+                    return $this->toSnippet($entry->getFieldValue($handle));
                 }
 
                 // Legacy layout: a single Matrix block (field handle == section name)
@@ -72,13 +70,26 @@ class TextSnippetTwigFunction extends BaseModule
                     $block = $entry->getFieldValue($sectionName)[0] ?? null;
 
                     if ($block && $block->getFieldLayout()?->getFieldByHandle($handle) !== null) {
-                        $value = $block->getFieldValue($handle);
-
-                        return is_string($value) && $value !== '' ? $value : null;
+                        return $this->toSnippet($block->getFieldValue($handle));
                     }
                 }
 
                 return null;
+            }
+
+            /**
+             * Rich-text fields (CKEditor, Redactor) hand back Stringable value
+             * objects rather than plain strings, so cast before rejecting.
+             */
+            private function toSnippet(mixed $value): ?string
+            {
+                if (! is_string($value) && ! $value instanceof \Stringable) {
+                    return null;
+                }
+
+                $value = (string) $value;
+
+                return $value !== '' ? $value : null;
             }
 
             /** @return Entry[] */

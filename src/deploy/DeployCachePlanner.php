@@ -5,7 +5,7 @@ namespace Noo\CraftModules\deploy;
 final class DeployCachePlanner
 {
     /**
-     * @param  string[]  $changedFiles
+     * @param string[] $changedFiles
      */
     public function plan(array $changedFiles): DeployCachePlan
     {
@@ -25,7 +25,7 @@ final class DeployCachePlanner
                 $refreshBlitz = true;
             }
 
-            if ($this->isIn($file, ['modules/'])) {
+            if ($this->isIn($file, ['modules/', 'plugins/'])) {
                 array_push($cacheKeys, 'compiled-classes', 'data', 'cp-resources');
                 $refreshBlitz = true;
             }
@@ -76,7 +76,7 @@ final class DeployCachePlanner
     }
 
     /**
-     * @param  string[]  $prefixes
+     * @param string[] $prefixes
      */
     private function isIn(string $file, array $prefixes): bool
     {
