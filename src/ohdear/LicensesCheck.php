@@ -10,7 +10,7 @@ use webhubworks\ohdear\health\checks\Check;
 
 class LicensesCheck extends Check
 {
-    private const CACHE_KEY = 'craft-modules.ohdear.licenses';
+    private const CACHE_KEY = 'craft-modules.ohdear.licenses.v2';
 
     protected array $ignore = [];
     protected bool $warnOnTrial = true;
@@ -78,7 +78,7 @@ class LicensesCheck extends Check
             if (in_array($handle, $this->ignore, true)) {
                 continue;
             }
-            if (empty($info['licenseKey']) && empty($info['licenseKeyStatus'])) {
+            if (! LicenseInfo::shouldCheckPlugin($info)) {
                 continue;
             }
 
