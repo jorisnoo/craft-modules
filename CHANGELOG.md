@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.3) (2026-07-16)
+
+### Code Refactoring
+
+- **ohdear:** extract license checking logic to LicenseInfo class ([9a61fc4](https://github.com/jorisnoo/craft-modules/commit/9a61fc4352f4003f4a17b41a5f5dd527384fc973))
 ## [2.1.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.2) (2026-07-16)
 
 ### Bug Fixes
