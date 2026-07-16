@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.2) (2026-07-16)
+
+### Bug Fixes
+
+- register textSnippet Twig extension as a named class, so Twig's compiled-template cache and implicit `{% cache %}` keys stay stable across requests ([dc30953](https://github.com/jorisnoo/craft-modules/commit/dc309539ea015137ddf12381c43e8c0a9d5188fa))
 ## [2.1.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.1) (2026-07-16)
 
 ### Code Refactoring
