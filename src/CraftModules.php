@@ -49,6 +49,7 @@ class CraftModules extends Module
                 new CpNavItems(),
                 new EnvironmentIndicator(),
                 new FlareExceptionFilter(),
+                new FlareLogs(),
                 new FocalPointPicker(),
                 new HideSlugWithoutUri(),
                 new MakeUsersEditors(),

@@ -65,6 +65,17 @@ Adjusts the default CP navigation: removes the Dashboard item and replaces the O
 
 Filters common HTTP exceptions (400, 403, 404) from Flare error reporting. Only activates when the `spatie/craft-flare` plugin is installed.
 
+### Flare logs
+
+When `FLARE_KEY` is set, `FlareLogs` automatically forwards Craft/Yii logs to Flare's OpenTelemetry logs endpoint. No application configuration is required beyond bootstrapping `CraftModules`.
+
+```dotenv
+FLARE_KEY=your-project-key
+FLARE_LOG_LEVEL=warning
+```
+
+`FLARE_LOG_LEVEL` accepts `debug`, `info`, `warning` (the default), or `error`. The target batches messages until Yii flushes them and silently ignores delivery failures so logging cannot break a request.
+
 ### MakeUsersEditors
 
 Automatically assigns users to the `editor` user group after group/permission assignment.
