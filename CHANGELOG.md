@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.4) (2026-07-17)
+
+### Bug Fixes
+
+- **ohdear:** dismiss craft license mismatches phoned home via non-canonical hosts ([3764e38](https://github.com/jorisnoo/craft-modules/commit/3764e38ef52edacd65f4fede7d1ed897a002c542))
 ## [2.1.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.3) (2026-07-16)
 
 ### Code Refactoring
