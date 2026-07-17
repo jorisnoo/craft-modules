@@ -4,6 +4,24 @@ use craft\helpers\FileHelper;
 use Noo\CraftModules\deploy\GitDeploymentState;
 use Symfony\Component\Process\Process;
 
+/**
+ * Runs git isolated from the user's global/system config, so signing
+ * prompts, commit templates, or hooks can never stall the suite.
+ */
+function runGit(array $arguments, ?string $cwd = null): Process
+{
+    $process = new Process(['git', ...$arguments], $cwd, [
+        'GIT_CONFIG_GLOBAL' => '/dev/null',
+        'GIT_CONFIG_NOSYSTEM' => '1',
+        'GIT_AUTHOR_NAME' => 'Test',
+        'GIT_AUTHOR_EMAIL' => 'test@example.com',
+        'GIT_COMMITTER_NAME' => 'Test',
+        'GIT_COMMITTER_EMAIL' => 'test@example.com',
+    ]);
+
+    return $process->setTimeout(120)->mustRun();
+}
+
 afterEach(function () {
     if (! isset($this->repository) || ! is_dir($this->repository)) {
         return;
@@ -16,11 +34,7 @@ it('compares the current tree with a previous commit', function () {
     $this->repository = sys_get_temp_dir().'/craft-modules-git-'.bin2hex(random_bytes(6));
     mkdir($this->repository);
 
-    $git = fn (array $arguments) => (new Process(
-        ['git', ...$arguments],
-        $this->repository,
-        ['GIT_AUTHOR_NAME' => 'Test', 'GIT_AUTHOR_EMAIL' => 'test@example.com', 'GIT_COMMITTER_NAME' => 'Test', 'GIT_COMMITTER_EMAIL' => 'test@example.com'],
-    ))->mustRun();
+    $git = fn (array $arguments) => runGit($arguments, $this->repository);
 
     $git(['init', '--quiet']);
     file_put_contents($this->repository.'/README.md', "First\n");
@@ -45,16 +59,10 @@ it('fetches a missing deployment commit from origin', function () {
     $source = $this->repository.'-source';
 
     try {
-        (new Process(['git', 'init', '--quiet', '--bare', $origin]))->mustRun();
-        (new Process(['git', 'clone', '--quiet', $origin, $source]))->mustRun();
+        runGit(['init', '--quiet', '--bare', $origin]);
+        runGit(['clone', '--quiet', $origin, $source]);
 
-        $environment = [
-            'GIT_AUTHOR_NAME' => 'Test',
-            'GIT_AUTHOR_EMAIL' => 'test@example.com',
-            'GIT_COMMITTER_NAME' => 'Test',
-            'GIT_COMMITTER_EMAIL' => 'test@example.com',
-        ];
-        $git = fn (array $arguments) => (new Process(['git', ...$arguments], $source, $environment))->mustRun();
+        $git = fn (array $arguments) => runGit($arguments, $source);
 
         file_put_contents($source.'/first.txt', "First\n");
         $git(['add', 'first.txt']);
@@ -67,7 +75,7 @@ it('fetches a missing deployment commit from origin', function () {
         $git(['commit', '--quiet', '-m', 'Second']);
         $git(['push', '--quiet', 'origin', 'HEAD:main']);
 
-        (new Process(['git', 'clone', '--quiet', '--depth=1', '--branch=main', 'file://'.$origin, $this->repository]))->mustRun();
+        runGit(['clone', '--quiet', '--depth=1', '--branch=main', 'file://'.$origin, $this->repository]);
         $state = new GitDeploymentState($this->repository);
 
         expect($state->commitExists($firstCommit))->toBeFalse()
