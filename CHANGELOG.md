@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.5) (2026-07-17)
+
+### Features
+
+- **logs:** forward Craft/Yii logs to Flare OpenTelemetry endpoint ([4dd0430](https://github.com/jorisnoo/craft-modules/commit/4dd0430f9f08ef3650d422caf826114ed87242d9))
 ## [2.1.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.4) (2026-07-17)
 
 ### Bug Fixes
