@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.1) (2026-07-18)
+
+### Features
+
+- **ohdear:** make queue health checks resilient with heartbeat grace period ([95a0485](https://github.com/jorisnoo/craft-modules/commit/95a0485a1cd6367dc7f758b572aaa34eb9daac20))
 ## [2.2.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.0) (2026-07-18)
 
 ### Features
