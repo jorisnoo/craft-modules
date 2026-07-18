@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.0) (2026-07-18)
+
+### Features
+
+- **ohdear:** keep last good cached result when composer checks fail transiently ([3b7dfc7](https://github.com/jorisnoo/craft-modules/commit/3b7dfc7eb42c776f740e8d54566bd8aa17fcf3ef))
 ## [2.1.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.5) (2026-07-17)
 
 ### Features
