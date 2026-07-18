@@ -168,10 +168,27 @@ class DeployController extends Controller
         }
 
         if ($plan->refreshBlitz) {
-            if (Craft::$app->getPlugins()->getPlugin('blitz') === null) {
+            $blitz = Craft::$app->getPlugins()->getPlugin('blitz');
+
+            if ($blitz === null) {
                 $this->stdout("Blitz is not installed or enabled; skipping its refresh.\n", Console::FG_YELLOW);
             } else {
-                $this->runConsoleAction('blitz/cache/refresh', ['queue' => $this->queue]);
+                $cachePurger = $blitz->get('cachePurger');
+
+                // Deployments purge the reverse proxy independently. Keep Blitz's
+                // clear, flush and generate steps, but prevent its duplicate purge.
+                $preventPurge = static function ($event): void {
+                    $event->isValid = false;
+                };
+                $eventName = $cachePurger::EVENT_BEFORE_PURGE_ALL_CACHE;
+
+                $cachePurger->on($eventName, $preventPurge);
+
+                try {
+                    $this->runConsoleAction('blitz/cache/refresh', ['queue' => $this->queue]);
+                } finally {
+                    $cachePurger->off($eventName, $preventPurge);
+                }
             }
         }
     }
@@ -243,7 +260,7 @@ class DeployController extends Controller
         }
 
         if ($plan->refreshBlitz) {
-            $this->stdout('  Refresh Blitz'.($this->queue ? ' in the queue' : ' immediately').".\n");
+            $this->stdout('  Refresh Blitz without purging the reverse proxy'.($this->queue ? ' (warming queued)' : '').".\n");
         }
     }
 
