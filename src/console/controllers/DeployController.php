@@ -5,6 +5,7 @@ namespace Noo\CraftModules\console\controllers;
 use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
+use craft\helpers\Queue;
 use craft\utilities\ClearCaches;
 use Noo\CraftModules\deploy\DeployCachePlan;
 use Noo\CraftModules\deploy\DeployCachePlanner;
@@ -13,6 +14,7 @@ use Noo\CraftModules\deploy\GitDeploymentState;
 use Noo\CraftModules\deploy\StateFile;
 use Symfony\Component\Process\Process;
 use Throwable;
+use webhubworks\ohdear\health\jobs\QueueHealthJob;
 use yii\console\ExitCode;
 
 class DeployController extends Controller
@@ -153,6 +155,16 @@ class DeployController extends Controller
 
                 $this->runConsoleAction("clear-caches/$cacheKey");
             }
+        }
+
+        if (
+            ($plan->clearAll || in_array('data', $plan->cacheKeys, true)) &&
+            class_exists(QueueHealthJob::class)
+        ) {
+            // Clearing the data cache wipes the Oh Dear queue heartbeat; push a
+            // replacement so a healthy worker restores it without waiting for cron.
+            Queue::push(new QueueHealthJob);
+            $this->stdout("Queued an Oh Dear queue heartbeat to replace the cleared one.\n");
         }
 
         if ($plan->refreshBlitz) {
