@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.2) (2026-07-18)
+
+### Bug Fixes
+
+- **deploy:** prevent duplicate reverse proxy purge in blitz cache refresh ([ea23e97](https://github.com/jorisnoo/craft-modules/commit/ea23e972976f82fc4deb865f40e868bd086937af))
 ## [2.2.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.1) (2026-07-18)
 
 ### Features
