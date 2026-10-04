@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.3](https://github.com/jorisnoo/craft-modules/releases/tag/2.2.3) (2026-10-04)
+
+### Bug Fixes
+
+- **ohdear:** handle abandoned packages without replacements ([a83912a](https://github.com/jorisnoo/craft-modules/commit/a83912a686f9f8a64d94bd6b14f4bac33547e6d8))
+
+### Chores
+
+- **deps:** allow symfony/process ^8.0 ([6a1a681](https://github.com/jorisnoo/craft-modules/commit/6a1a68122ddfd872f1e51db2124e0ac88187b601))
 ## [2.2.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.2) (2026-07-18)
 
 ### Bug Fixes
