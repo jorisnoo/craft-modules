@@ -157,3 +157,7 @@ The three original deploy-script lines can therefore be replaced with the single
 ## License
 
 The MIT License (MIT). Please see [LICENSE](LICENSE.md) for more information.
+
+## Maintainer releases
+
+See [RELEASING.md](RELEASING.md) for versioning, changelog entries and the release command.

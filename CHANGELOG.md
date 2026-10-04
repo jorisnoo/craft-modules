@@ -11,57 +11,57 @@ All notable changes to this project will be documented in this file.
 ### Chores
 
 - **deps:** allow symfony/process ^8.0 ([6a1a681](https://github.com/jorisnoo/craft-modules/commit/6a1a68122ddfd872f1e51db2124e0ac88187b601))
-## [2.2.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.2) (2026-07-18)
+## [2.2.2](https://github.com/jorisnoo/craft-modules/releases/tag/2.2.2) (2026-07-18)
 
 ### Bug Fixes
 
 - **deploy:** prevent duplicate reverse proxy purge in blitz cache refresh ([ea23e97](https://github.com/jorisnoo/craft-modules/commit/ea23e972976f82fc4deb865f40e868bd086937af))
-## [2.2.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.1) (2026-07-18)
+## [2.2.1](https://github.com/jorisnoo/craft-modules/releases/tag/2.2.1) (2026-07-18)
 
 ### Features
 
 - **ohdear:** make queue health checks resilient with heartbeat grace period ([95a0485](https://github.com/jorisnoo/craft-modules/commit/95a0485a1cd6367dc7f758b572aaa34eb9daac20))
-## [2.2.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.2.0) (2026-07-18)
+## [2.2.0](https://github.com/jorisnoo/craft-modules/releases/tag/2.2.0) (2026-07-18)
 
 ### Features
 
 - **ohdear:** keep last good cached result when composer checks fail transiently ([3b7dfc7](https://github.com/jorisnoo/craft-modules/commit/3b7dfc7eb42c776f740e8d54566bd8aa17fcf3ef))
-## [2.1.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.5) (2026-07-17)
+## [2.1.5](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.5) (2026-07-17)
 
 ### Features
 
 - **logs:** forward Craft/Yii logs to Flare OpenTelemetry endpoint ([4dd0430](https://github.com/jorisnoo/craft-modules/commit/4dd0430f9f08ef3650d422caf826114ed87242d9))
-## [2.1.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.4) (2026-07-17)
+## [2.1.4](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.4) (2026-07-17)
 
 ### Bug Fixes
 
 - **ohdear:** dismiss craft license mismatches phoned home via non-canonical hosts ([3764e38](https://github.com/jorisnoo/craft-modules/commit/3764e38ef52edacd65f4fede7d1ed897a002c542))
-## [2.1.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.3) (2026-07-16)
+## [2.1.3](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.3) (2026-07-16)
 
 ### Code Refactoring
 
 - **ohdear:** extract license checking logic to LicenseInfo class ([9a61fc4](https://github.com/jorisnoo/craft-modules/commit/9a61fc4352f4003f4a17b41a5f5dd527384fc973))
-## [2.1.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.2) (2026-07-16)
+## [2.1.2](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.2) (2026-07-16)
 
 ### Bug Fixes
 
 - register textSnippet Twig extension as a named class, so Twig's compiled-template cache and implicit `{% cache %}` keys stay stable across requests ([dc30953](https://github.com/jorisnoo/craft-modules/commit/dc309539ea015137ddf12381c43e8c0a9d5188fa))
-## [2.1.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.1) (2026-07-16)
+## [2.1.1](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.1) (2026-07-16)
 
 ### Code Refactoring
 
 - extract text snippet value handler and add plugins directory caching ([3d82370](https://github.com/jorisnoo/craft-modules/commit/3d82370968231604a7ff16aa9af065f15165afe4))
-## [2.1.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.1.0) (2026-07-14)
+## [2.1.0](https://github.com/jorisnoo/craft-modules/releases/tag/2.1.0) (2026-07-14)
 
 ### Features
 
 - **deploy:** add frontend build cache ([3c347af](https://github.com/jorisnoo/craft-modules/commit/3c347afc43a13221b7f1c017a44c3699ec0f8789))
-## [2.0.7](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.7) (2026-07-14)
+## [2.0.7](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.7) (2026-07-14)
 
 ### Features
 
 - **deploy:** fetch missing commits from remote during shallow deployments ([4b5278e](https://github.com/jorisnoo/craft-modules/commit/4b5278e01f1a9af9a8230c4075afaa496c8c6b6d))
-## [2.0.6](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.6) (2026-07-14)
+## [2.0.6](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.6) (2026-07-14)
 
 ### Features
 
@@ -70,7 +70,7 @@ All notable changes to this project will be documented in this file.
 ### Bug Fixes
 
 - **deploy:** respect configured interactive flag ([a41683d](https://github.com/jorisnoo/craft-modules/commit/a41683d0d691de8f68ccc09dcda7369df504b07d))
-## [2.0.5](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.5) (2026-07-10)
+## [2.0.5](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.5) (2026-07-10)
 
 ### Bug Fixes
 
@@ -79,23 +79,23 @@ All notable changes to this project will be documented in this file.
 ### Build System
 
 - **deps:** bump actions/checkout from 6 to 7 ([834a962](https://github.com/jorisnoo/craft-modules/commit/834a96280ef5bd6eaa4e5e1bb0cba92aa713b8b5))
-## [2.0.4](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.4) (2026-06-02)
+## [2.0.4](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.4) (2026-06-02)
 
 ### Features
 
 - add HideSlugWithoutUri module to hide slug field from entries without URI format ([3e5b61a](https://github.com/jorisnoo/craft-modules/commit/3e5b61aa7ea988e925288e5e0bd64ed8409ad937))
 - **TextSnippetTwigFunction:** support multi-entry-type snippets with optional type priority ([22e64f1](https://github.com/jorisnoo/craft-modules/commit/22e64f198bbdef5a4faba70b76329627214079e4))
-## [2.0.3](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.3) (2026-06-02)
+## [2.0.3](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.3) (2026-06-02)
 
 ### Features
 
 - add dual-layout support to TextSnippetTwigFunction with per-request memoization ([f351060](https://github.com/jorisnoo/craft-modules/commit/f351060e7d0b5a97bc108bc7d8b89534d7de1e59))
-## [2.0.2](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.2) (2026-05-15)
+## [2.0.2](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.2) (2026-05-15)
 
 ### Features
 
 - add FocalPointPicker module for selecting asset focal points ([c6b9bde](https://github.com/jorisnoo/craft-modules/commit/c6b9bdebe9724d47c96ec0d76250ca563f204695))
-## [2.0.1](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.1) (2026-05-14)
+## [2.0.1](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.1) (2026-05-14)
 
 ### Features
 
@@ -104,7 +104,7 @@ All notable changes to this project will be documented in this file.
 ### Chores
 
 - add MIT license and package metadata ([aaf7ff9](https://github.com/jorisnoo/craft-modules/commit/aaf7ff959b517444c1f98a016691f61aaa4ea848))
-## [2.0.0](https://github.com/jorisnoo/craft-modules/releases/tag/v2.0.0) (2026-05-12)
+## [2.0.0](https://github.com/jorisnoo/craft-modules/releases/tag/2.0.0) (2026-05-12)
 
 ### ⚠ BREAKING CHANGES
 
