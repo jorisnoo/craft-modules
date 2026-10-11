@@ -74,7 +74,7 @@ FLARE_KEY=your-project-key
 FLARE_LOG_LEVEL=warning
 ```
 
-`FLARE_LOG_LEVEL` accepts `debug`, `info`, `warning` (the default), or `error`. The target batches messages until Yii flushes them and silently ignores delivery failures so logging cannot break a request.
+`FLARE_LOG_LEVEL` accepts `debug`, `info`, `warning` (the default), or `error`. The target batches messages until Yii flushes them and silently ignores delivery failures so logging cannot break a request. The key is sent only in the `x-api-token` header, redirects are not followed, and connections time out after 500 ms. On PHP-FPM the final flush at the end of a request runs after `fastcgi_finish_request()`, so delivery does not delay the response.
 
 ### MakeUsersEditors
 
@@ -136,8 +136,9 @@ have already been built:
 php craft craft-modules/deploy/build
 ```
 
-It fingerprints `package.json`, npm lock/config files, Vite `.env` files, everything in `src/` and
-`templates/`, and common Vite, Tailwind, PostCSS, Webpack, and TypeScript/JavaScript config files.
+It fingerprints `package.json`, npm/Yarn/pnpm lock files, `.npmrc`, Vite `.env` files, everything in
+`src/` and `templates/`, and common Vite, Tailwind, PostCSS, Webpack, and TypeScript/JavaScript config
+files. The deploy command uses the same list to decide when the Vite file cache must be cleared.
 Symlinked inputs are followed and their target contents are included. On a cache hit it restores
 `web/dist`; on a miss it runs `npm ci` and `npm run build`, verifies
 `web/dist/.vite/manifest.json`, and stores the result. The five most recent builds are retained.

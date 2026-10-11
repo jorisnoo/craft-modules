@@ -28,6 +28,17 @@ class FlareTarget extends Target
 
     public int $timeout = 2;
 
+    public int $connectTimeoutMs = 500;
+
+    /**
+     * Whether the final export (at request shutdown) may first hand the
+     * response to the client via fastcgi_finish_request(), so delivery to
+     * Flare does not delay the visitor.
+     */
+    public bool $finishRequestBeforeFinalExport = true;
+
+    private bool $final = false;
+
     public $logVars = [];
 
     /**
@@ -43,10 +54,28 @@ class FlareTarget extends Target
         };
     }
 
+    public function collect($messages, $final): void
+    {
+        $this->final = (bool) $final;
+
+        try {
+            parent::collect($messages, $final);
+        } finally {
+            $this->final = false;
+        }
+    }
+
     public function export(): void
     {
         if ($this->apiKey === '' || $this->messages === []) {
             return;
+        }
+
+        // Yii's final flush runs in a shutdown function after the response has
+        // been sent, so finishing the FastCGI request here only releases the
+        // client earlier; later log targets still run.
+        if ($this->final && $this->finishRequestBeforeFinalExport && function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
         }
 
         $curl = curl_init();
@@ -55,12 +84,8 @@ class FlareTarget extends Target
             return;
         }
 
-        $endpoint = rtrim($this->baseUrl, '/').'/v1/logs?'.http_build_query([
-            'key' => $this->apiKey,
-        ]);
-
         curl_setopt_array($curl, [
-            CURLOPT_URL => $endpoint,
+            CURLOPT_URL => rtrim($this->baseUrl, '/').'/v1/logs',
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
                 'Content-Type: application/json',
@@ -70,9 +95,10 @@ class FlareTarget extends Target
             CURLOPT_POSTFIELDS => json_encode($this->makePayload($this->messages), JSON_INVALID_UTF8_SUBSTITUTE),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_TIMEOUT => $this->timeout,
+            CURLOPT_CONNECTTIMEOUT_MS => $this->connectTimeoutMs,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 1,
+            // Never follow redirects: they could forward the API token elsewhere.
+            CURLOPT_FOLLOWLOCATION => false,
         ]);
 
         try {
