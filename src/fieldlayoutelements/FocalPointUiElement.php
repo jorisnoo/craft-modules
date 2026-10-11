@@ -88,10 +88,11 @@ class FocalPointUiElement extends BaseUiElement
             'Saving…',
         ]);
 
-        $containerId = sprintf('focal-point-%s', mt_rand());
-        $toggleId = sprintf('focal-toggle-%s', mt_rand());
-        $revealId = sprintf('focal-reveal-%s', mt_rand());
-        $panelId = sprintf('focal-panel-%s', mt_rand());
+        $idSuffix = mt_rand();
+        $containerId = "focal-point-$idSuffix";
+        $toggleId = "focal-toggle-$idSuffix";
+        $revealId = "focal-reveal-$idSuffix";
+        $panelId = "focal-panel-$idSuffix";
         $namespacedContainerId = $view->namespaceInputId($containerId);
         $namespacedToggleId = $view->namespaceInputId($toggleId);
         $namespacedRevealId = $view->namespaceInputId($revealId);
@@ -215,7 +216,7 @@ class FocalPointUiElement extends BaseUiElement
             'data' => ['focal-ui-element' => true],
         ]);
 
-        $label = trim($this->label) !== '' ? trim($this->label) : Craft::t('app', 'Focal Point');
+        $label = $this->selectorLabel();
         $instructions = trim($this->instructions);
 
         $fieldHtml = Cp::fieldHtml($inputHtml, [
@@ -236,7 +237,8 @@ class FocalPointUiElement extends BaseUiElement
             return null;
         }
 
-        // Image kind
-        return $asset->getUrl() ?? Craft::$app->getAssets()->getThumbUrl($asset, 800, 800, false);
+        // Image kind: prefer a resized thumbnail (served through the CP, so it
+        // also works for private volumes) over the full-size original.
+        return Craft::$app->getAssets()->getThumbUrl($asset, 800, 800) ?: $asset->getUrl();
     }
 }

@@ -23,7 +23,7 @@ class RedirectDashboard extends BaseModule
             function (ActionEvent $event) {
                 if ($event->action->id === 'index') {
                     $event->isValid = false;
-                    Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('entries'))->send();
+                    Craft::$app->getResponse()->redirect(UrlHelper::cpUrl('entries'));
                 }
             }
         );

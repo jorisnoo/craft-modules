@@ -36,6 +36,12 @@ class DbController extends Controller
      */
     public function actionCleanup(): int
     {
+        if ($this->keep < 0) {
+            $this->stderr("--keep must be 0 or greater.\n");
+
+            return ExitCode::USAGE;
+        }
+
         $backupPath = Craft::$app->getPath()->getDbBackupPath();
 
         if (!is_dir($backupPath)) {
@@ -55,16 +61,28 @@ class DbController extends Controller
         }
 
         // Sort by modification time, newest first
-        usort($files, fn ($a, $b) => filemtime($b) <=> filemtime($a));
+        $mtimes = array_map(fn ($file) => (int) @filemtime($file), array_combine($files, $files));
+        arsort($mtimes);
 
-        $toDelete = array_slice($files, $this->keep);
+        $toDelete = array_slice(array_keys($mtimes), $this->keep);
+        $deleted = 0;
+        $failed = 0;
 
         foreach ($toDelete as $file) {
-            unlink($file);
-            $this->stdout("Deleted: " . basename($file) . "\n");
+            if (@unlink($file)) {
+                $deleted++;
+                $this->stdout("Deleted: " . basename($file) . "\n");
+            } else {
+                $failed++;
+                $this->stderr("Could not delete: " . basename($file) . "\n");
+            }
         }
 
-        $this->stdout("\nRemoved " . count($toDelete) . " old backup(s), kept {$this->keep}.\n");
+        $this->stdout("\nRemoved {$deleted} old backup(s), kept {$this->keep}.\n");
+
+        if ($failed > 0) {
+            return ExitCode::IOERR;
+        }
 
         return ExitCode::OK;
     }
