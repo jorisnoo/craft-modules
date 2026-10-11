@@ -4,7 +4,9 @@ namespace Noo\CraftModules;
 
 use Craft;
 use craft\elements\Entry;
+use craft\base\ElementInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\Markup;
 use Twig\TwigFunction;
 
 /**
@@ -17,6 +19,9 @@ class TextSnippetTwigExtension extends AbstractExtension
 {
     /** @var array<string, Entry[]> Per-request cache of a section's entries, keyed by "section|siteId". */
     private array $entries = [];
+
+    /** @var array<string, ElementInterface|null> Per-request cache of legacy Matrix blocks, keyed by "entryId|siteId|field". */
+    private array $legacyBlocks = [];
 
     public function getFunctions(): array
     {
@@ -32,7 +37,7 @@ class TextSnippetTwigExtension extends AbstractExtension
      * the section's entries and returns the value from whichever one carries the handle.
      * Pass $entryType to check that entry type first; it still falls back to the others.
      */
-    public function textSnippet(string $handle, string $sectionName = 'translations', ?string $entryType = null): ?string
+    public function textSnippet(string $handle, string $sectionName = 'translations', ?string $entryType = null): string|Markup|null
     {
         $entries = $this->sectionEntries($sectionName);
 
@@ -54,7 +59,7 @@ class TextSnippetTwigExtension extends AbstractExtension
         return null;
     }
 
-    private function snippetFromEntry(Entry $entry, string $handle, string $sectionName): ?string
+    private function snippetFromEntry(Entry $entry, string $handle, string $sectionName): string|Markup|null
     {
         $layout = $entry->getFieldLayout();
 
@@ -66,7 +71,7 @@ class TextSnippetTwigExtension extends AbstractExtension
         // Legacy layout: a single Matrix block (field handle == section name)
         // holds the snippets as its sub-fields.
         if ($layout?->getFieldByHandle($sectionName) !== null) {
-            $block = $entry->getFieldValue($sectionName)[0] ?? null;
+            $block = $this->legacyBlock($entry, $sectionName);
 
             if ($block && $block->getFieldLayout()?->getFieldByHandle($handle) !== null) {
                 return $this->toSnippet($block->getFieldValue($handle));
@@ -77,18 +82,40 @@ class TextSnippetTwigExtension extends AbstractExtension
     }
 
     /**
-     * Rich-text fields (CKEditor, Redactor) hand back Stringable value
-     * objects rather than plain strings, so cast before rejecting.
+     * The legacy Matrix field returns a lazy EntryQuery, so resolve its first
+     * block once per entry instead of querying on every textSnippet() call.
      */
-    private function toSnippet(mixed $value): ?string
+    private function legacyBlock(Entry $entry, string $fieldHandle): ?ElementInterface
+    {
+        $key = "$entry->id|$entry->siteId|$fieldHandle";
+
+        if (! array_key_exists($key, $this->legacyBlocks)) {
+            $block = $entry->getFieldValue($fieldHandle)[0] ?? null;
+
+            $this->legacyBlocks[$key] = $block instanceof ElementInterface ? $block : null;
+        }
+
+        return $this->legacyBlocks[$key];
+    }
+
+    /**
+     * Rich-text fields (CKEditor, Redactor) hand back Twig\Markup value
+     * objects; keep them as Markup so their HTML renders without |raw.
+     * Other values are returned as plain strings and escaped as usual.
+     */
+    private function toSnippet(mixed $value): string|Markup|null
     {
         if (! is_string($value) && ! $value instanceof \Stringable) {
             return null;
         }
 
-        $value = (string) $value;
+        $string = (string) $value;
 
-        return $value !== '' ? $value : null;
+        if ($string === '') {
+            return null;
+        }
+
+        return $value instanceof Markup ? new Markup($string, 'UTF-8') : $string;
     }
 
     /** @return Entry[] */
