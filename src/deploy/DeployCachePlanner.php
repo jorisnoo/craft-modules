@@ -51,10 +51,10 @@ final class DeployCachePlanner
         );
     }
 
-    public function full(string $reason, array $changedFiles = []): DeployCachePlan
+    public function full(string $reason): DeployCachePlan
     {
         return new DeployCachePlan(
-            changedFiles: array_values(array_unique($changedFiles)),
+            changedFiles: [],
             cacheKeys: [],
             refreshBlitz: true,
             clearAll: true,
@@ -64,15 +64,7 @@ final class DeployCachePlanner
 
     private function isFrontendFile(string $file): bool
     {
-        if ($this->isIn($file, ['src/'])) {
-            return true;
-        }
-
-        if (in_array($file, ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], true)) {
-            return true;
-        }
-
-        return preg_match('/^(vite\.config\.|config\/vite\.php$)/', $file) === 1;
+        return $file === 'config/vite.php' || FrontendBuildCache::isInput($file);
     }
 
     /**

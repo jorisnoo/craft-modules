@@ -19,31 +19,61 @@ final class FrontendBuildCache
     ) {}
 
     /**
+     * Paths and root-level glob patterns that affect the frontend build. Shared
+     * with DeployCachePlanner so both agree on what counts as a frontend change.
+     */
+    public const INPUTS = [
+        'package.json',
+        'package-lock.json',
+        'npm-shrinkwrap.json',
+        'yarn.lock',
+        'pnpm-lock.yaml',
+        '.npmrc',
+        'src',
+        'templates',
+        'vite.config.*',
+        'tailwind.config.*',
+        'postcss.config.*',
+        'webpack.config.*',
+        'tsconfig*.json',
+        'jsconfig*.json',
+        '.env',
+        '.env.*',
+    ];
+
+    /**
+     * Whether a repository-relative path is one of the build inputs.
+     */
+    public static function isInput(string $path): bool
+    {
+        foreach (self::INPUTS as $input) {
+            if (strpbrk($input, '*?[') !== false
+                ? fnmatch($input, $path, FNM_PATHNAME)
+                : ($path === $input || str_starts_with($path, $input.'/'))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * @return string[]
      */
     public function defaultInputs(): array
     {
-        $inputs = [
-            'package.json',
-            'package-lock.json',
-            'npm-shrinkwrap.json',
-            '.npmrc',
-            'src',
-            'templates',
-        ];
+        $root = rtrim($this->root, '/');
+        $inputs = [];
 
-        foreach ([
-            'vite.config.*',
-            'tailwind.config.*',
-            'postcss.config.*',
-            'webpack.config.*',
-            'tsconfig*.json',
-            'jsconfig*.json',
-            '.env',
-            '.env.*',
-        ] as $pattern) {
-            foreach (glob(rtrim($this->root, '/').'/'.$pattern) ?: [] as $path) {
-                $inputs[] = substr($path, strlen(rtrim($this->root, '/')) + 1);
+        foreach (self::INPUTS as $input) {
+            if (strpbrk($input, '*?[') === false) {
+                $inputs[] = $input;
+
+                continue;
+            }
+
+            foreach (glob($root.'/'.$input) ?: [] as $path) {
+                $inputs[] = substr($path, strlen($root) + 1);
             }
         }
 
@@ -115,6 +145,9 @@ final class FrontendBuildCache
             $this->removeDirectory($staging);
         }
 
+        // prune() keeps the most recently used entries by mtime.
+        @touch($source);
+
         return true;
     }
 
@@ -128,14 +161,19 @@ final class FrontendBuildCache
 
         $this->ensureDirectory($this->cacheDirectory);
         $destination = $this->cachePath($fingerprint);
+
+        if (! $replace && $this->has($fingerprint)) {
+            return;
+        }
+
         $staging = $this->cacheDirectory.'/.'.$fingerprint.'-'.bin2hex(random_bytes(6));
 
         try {
             $this->copyDirectory($source, $staging);
 
             // Unless this is a forced refresh, reuse an entry another deployment
-            // may have published while this one was compiling.
-            if (! $replace && is_file($destination.'/'.$this->manifestRelativeToOutput())) {
+            // may have published while this one was copying.
+            if (! $replace && $this->has($fingerprint)) {
                 return;
             }
 

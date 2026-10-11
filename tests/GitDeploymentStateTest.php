@@ -86,3 +86,20 @@ it('fetches a missing deployment commit from origin', function () {
         FileHelper::removeDirectory($source);
     }
 });
+
+it('recognises commit hashes', function () {
+    expect(GitDeploymentState::isCommitHash('abc1234'))->toBeTrue()
+        ->and(GitDeploymentState::isCommitHash(str_repeat('a', 40)))->toBeTrue()
+        ->and(GitDeploymentState::isCommitHash('--output=/tmp/x'))->toBeFalse()
+        ->and(GitDeploymentState::isCommitHash('HEAD'))->toBeFalse()
+        ->and(GitDeploymentState::isCommitHash('abc12'))->toBeFalse();
+});
+
+it('rejects revisions that git could parse as options', function () {
+    $state = new GitDeploymentState(sys_get_temp_dir());
+
+    expect($state->commitExists('--help'))->toBeFalse()
+        ->and($state->fetchCommit('--upload-pack=touch /tmp/pwned'))->toBeFalse()
+        ->and(fn () => $state->changedFiles('--output=/tmp/x', 'HEAD'))->toThrow(RuntimeException::class, 'Invalid Git revision')
+        ->and(fn () => $state->currentCommit('--output=/tmp/x'))->toThrow(RuntimeException::class, 'Invalid Git revision');
+});

@@ -4,6 +4,7 @@ namespace Noo\CraftModules\console\controllers;
 
 use Craft;
 use craft\console\Controller;
+use craft\helpers\App;
 use craft\helpers\Console;
 use craft\helpers\Queue;
 use craft\utilities\ClearCaches;
@@ -73,6 +74,12 @@ class DeployController extends Controller
                 $plan = $planner->full('A full refresh was forced.');
             } elseif ($previousCommit === null) {
                 $plan = $planner->full('No previous successful deployment was recorded.');
+            } elseif (! GitDeploymentState::isCommitHash($previousCommit)) {
+                if ($this->from !== '') {
+                    throw new \InvalidArgumentException("--from must be a commit hash, got: $previousCommit");
+                }
+
+                $plan = $planner->full('The recorded deployment state is not a commit hash.');
             } elseif (! $git->fetchCommit($previousCommit)) {
                 $plan = $planner->full("The previous commit $previousCommit is unavailable in this clone.");
             } else {
@@ -266,31 +273,30 @@ class DeployController extends Controller
 
     private function resolveStateFile(): string
     {
-        if ($this->stateFile !== null && $this->stateFile !== '') {
-            return Craft::getAlias($this->stateFile);
-        }
-
-        $forgeSiteRoot = getenv('FORGE_SITE_ROOT');
-
-        if (is_string($forgeSiteRoot) && $forgeSiteRoot !== '') {
-            return rtrim($forgeSiteRoot, '/').'/.deploy-state/blitz-commit';
-        }
-
-        return Craft::getAlias('@storage/runtime/blitz-deploy/commit');
+        return $this->resolvePath($this->stateFile, '.deploy-state/blitz-commit', '@storage/runtime/blitz-deploy/commit');
     }
 
     private function resolveBuildCacheDirectory(): string
     {
-        if ($this->buildCacheDir !== null && $this->buildCacheDir !== '') {
-            return Craft::getAlias($this->buildCacheDir);
+        return $this->resolvePath($this->buildCacheDir, '.deploy-cache/frontend-builds', '@storage/runtime/deploy-build-cache');
+    }
+
+    /**
+     * Resolves an explicit option, then a path below Forge's persistent site
+     * root, then a Craft storage fallback.
+     */
+    private function resolvePath(?string $override, string $forgePath, string $fallback): string
+    {
+        if ($override !== null && $override !== '') {
+            return Craft::getAlias($override);
         }
 
-        $forgeSiteRoot = getenv('FORGE_SITE_ROOT');
+        $forgeSiteRoot = App::env('FORGE_SITE_ROOT');
 
         if (is_string($forgeSiteRoot) && $forgeSiteRoot !== '') {
-            return rtrim($forgeSiteRoot, '/').'/.deploy-cache/frontend-builds';
+            return rtrim($forgeSiteRoot, '/').'/'.$forgePath;
         }
 
-        return Craft::getAlias('@storage/runtime/deploy-build-cache');
+        return Craft::getAlias($fallback);
     }
 }

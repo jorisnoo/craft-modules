@@ -108,3 +108,36 @@ it('rejects a build without a Vite manifest', function () {
 
     $cache->store($fingerprint);
 })->throws(RuntimeException::class, 'Vite manifest missing after build.');
+
+it('keeps recently restored builds when pruning', function () {
+    $cache = new FrontendBuildCache($this->root, $this->cacheDirectory);
+    mkdir($this->root.'/web/dist/.vite', 0777, true);
+    file_put_contents($this->root.'/web/dist/.vite/manifest.json', '{}');
+
+    $old = str_repeat('a', 64);
+    $new = str_repeat('b', 64);
+    $cache->store($old);
+    $cache->store($new);
+    touch($this->cacheDirectory.'/'.$old, time() - 3600);
+    touch($this->cacheDirectory.'/'.$new, time() - 60);
+
+    $cache->restore($old);
+    $cache->prune(1);
+
+    expect($cache->has($old))->toBeTrue()
+        ->and($cache->has($new))->toBeFalse();
+});
+
+it('does not overwrite an existing entry unless replacing', function () {
+    $cache = new FrontendBuildCache($this->root, $this->cacheDirectory);
+    $fingerprint = str_repeat('c', 64);
+    mkdir($this->root.'/web/dist/.vite', 0777, true);
+    file_put_contents($this->root.'/web/dist/.vite/manifest.json', '{}');
+    file_put_contents($this->root.'/web/dist/app.js', 'first');
+    $cache->store($fingerprint);
+
+    file_put_contents($this->root.'/web/dist/app.js', 'second');
+    $cache->store($fingerprint);
+
+    expect(file_get_contents($this->cacheDirectory.'/'.$fingerprint.'/app.js'))->toBe('first');
+});

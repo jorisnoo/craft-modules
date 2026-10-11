@@ -43,3 +43,11 @@ it('creates a conservative full plan', function () {
         ->and($plan->refreshBlitz)->toBeTrue()
         ->and($plan->reason)->toBe('No state exists.');
 });
+
+it('treats every frontend build input as a frontend change', function () {
+    foreach (['tailwind.config.js', 'postcss.config.cjs', 'tsconfig.json', '.env.production', '.npmrc', 'config/vite.php'] as $file) {
+        expect((new DeployCachePlanner)->plan([$file])->cacheKeys)->toContain('vite-file-cache');
+    }
+
+    expect((new DeployCachePlanner)->plan(['src-old/readme.txt', 'nested/tailwind.config.js'])->hasWork())->toBeFalse();
+});
