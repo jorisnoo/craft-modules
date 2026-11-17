@@ -14,7 +14,7 @@ class HideSlugWithoutUri extends BaseModule
             Entry::class,
             Entry::EVENT_DEFINE_META_FIELDS,
             function (DefineMetaFields $event) {
-                if (!isset($event->fields['slug'])) {
+                if (! isset($event->fields['slug'])) {
                     return;
                 }
 

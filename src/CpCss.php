@@ -20,7 +20,7 @@ class CpCss extends BaseModule
             View::EVENT_BEFORE_RENDER_PAGE_TEMPLATE,
             function (TemplateEvent $event) {
                 Craft::$app->getView()->registerCss(
-                    <<<CSS
+                    <<<'CSS'
                     body.login {
                         background: #fff;
                         color: #000;

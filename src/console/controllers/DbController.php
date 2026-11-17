@@ -38,7 +38,7 @@ class DbController extends Controller
     {
         $backupPath = Craft::$app->getPath()->getDbBackupPath();
 
-        if (!is_dir($backupPath)) {
+        if (! is_dir($backupPath)) {
             $this->stdout("No backup directory found.\n");
 
             return ExitCode::OK;
@@ -49,7 +49,7 @@ class DbController extends Controller
         ]);
 
         if (count($files) <= $this->keep) {
-            $this->stdout("Nothing to clean up. Found " . count($files) . " backup(s), keeping {$this->keep}.\n");
+            $this->stdout('Nothing to clean up. Found '.count($files)." backup(s), keeping {$this->keep}.\n");
 
             return ExitCode::OK;
         }
@@ -61,10 +61,10 @@ class DbController extends Controller
 
         foreach ($toDelete as $file) {
             unlink($file);
-            $this->stdout("Deleted: " . basename($file) . "\n");
+            $this->stdout('Deleted: '.basename($file)."\n");
         }
 
-        $this->stdout("\nRemoved " . count($toDelete) . " old backup(s), kept {$this->keep}.\n");
+        $this->stdout("\nRemoved ".count($toDelete)." old backup(s), kept {$this->keep}.\n");
 
         return ExitCode::OK;
     }

@@ -4,6 +4,7 @@ namespace Noo\CraftModules;
 
 use Throwable;
 use Twig\Error\RuntimeError;
+use webhubworks\flare\CraftFlare;
 use yii\web\BadRequestHttpException;
 use yii\web\ForbiddenHttpException;
 use yii\web\NotFoundHttpException;
@@ -12,11 +13,11 @@ class FlareExceptionFilter extends BaseModule
 {
     public function attachEventHandlers(): void
     {
-        if (! class_exists(\webhubworks\flare\CraftFlare::class)) {
+        if (! class_exists(CraftFlare::class)) {
             return;
         }
 
-        $flare = \webhubworks\flare\CraftFlare::getFlareInstance();
+        $flare = CraftFlare::getFlareInstance();
 
         $flare?->filterExceptionsUsing(function (Throwable $throwable) {
             if (

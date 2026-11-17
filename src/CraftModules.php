@@ -4,6 +4,8 @@ namespace Noo\CraftModules;
 
 use Craft;
 use craft\queue\Queue;
+use Noo\CraftTwigHelpers\TwigHelpers;
+use webhubworks\ohdear\health\jobs\QueueHealthJob;
 use yii\base\Event;
 use yii\base\Module;
 use yii\queue\ExecEvent;
@@ -23,19 +25,18 @@ class CraftModules extends Module
         Craft::$app->setModules([
             'craft-sitemap' => \Noo\CraftSitemap\Module::class,
             'remote-sync' => \Noo\CraftRemoteSync\Module::class,
-            'twig-helpers' => \Noo\CraftTwigHelpers\TwigHelpers::class,
+            'twig-helpers' => TwigHelpers::class,
         ]);
         Craft::$app->getModule('craft-sitemap');
         Craft::$app->getModule('remote-sync');
         Craft::$app->getModule('twig-helpers');
 
-
-        if (class_exists(\webhubworks\ohdear\health\jobs\QueueHealthJob::class)) {
+        if (class_exists(QueueHealthJob::class)) {
             Event::on(
                 Queue::class,
                 Queue::EVENT_AFTER_ERROR,
                 function (ExecEvent $event) {
-                    if ($event->job instanceof \webhubworks\ohdear\health\jobs\QueueHealthJob) {
+                    if ($event->job instanceof QueueHealthJob) {
                         Craft::$app->getQueue()->release($event->id);
                     }
                 }
@@ -44,17 +45,17 @@ class CraftModules extends Module
 
         Craft::$app->onInit(function () {
             $modules = [
-                new AnalyticsNavLink(),
-                new CpCss(),
-                new CpNavItems(),
-                new EnvironmentIndicator(),
-                new FlareExceptionFilter(),
-                new FlareLogs(),
-                new FocalPointPicker(),
-                new HideSlugWithoutUri(),
-                new MakeUsersEditors(),
-                new RedirectDashboard(),
-                new TextSnippetTwigFunction(),
+                new AnalyticsNavLink,
+                new CpCss,
+                new CpNavItems,
+                new EnvironmentIndicator,
+                new FlareExceptionFilter,
+                new FlareLogs,
+                new FocalPointPicker,
+                new HideSlugWithoutUri,
+                new MakeUsersEditors,
+                new RedirectDashboard,
+                new TextSnippetTwigFunction,
             ];
 
             foreach ($modules as $module) {

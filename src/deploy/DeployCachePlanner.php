@@ -5,7 +5,7 @@ namespace Noo\CraftModules\deploy;
 final class DeployCachePlanner
 {
     /**
-     * @param string[] $changedFiles
+     * @param  string[]  $changedFiles
      */
     public function plan(array $changedFiles): DeployCachePlan
     {
@@ -76,7 +76,7 @@ final class DeployCachePlanner
     }
 
     /**
-     * @param string[] $prefixes
+     * @param  string[]  $prefixes
      */
     private function isIn(string $file, array $prefixes): bool
     {

@@ -20,7 +20,7 @@ class MakeUsersEditors extends BaseModule
                 /** @var User $user */
                 $user = $event->sender;
 
-                if (!$user->firstSave || $user->propagating || $user->resaving) {
+                if (! $user->firstSave || $user->propagating || $user->resaving) {
                     return;
                 }
 
@@ -29,11 +29,11 @@ class MakeUsersEditors extends BaseModule
                 }
 
                 $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')?->id;
-                if (!$editorGroupId) {
+                if (! $editorGroupId) {
                     return;
                 }
 
-                $groupIds = array_map(fn($g) => $g->id, $user->getGroups());
+                $groupIds = array_map(fn ($g) => $g->id, $user->getGroups());
                 if (in_array($editorGroupId, $groupIds, false)) {
                     return;
                 }

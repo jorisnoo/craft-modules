@@ -20,6 +20,7 @@ class FocalPointUiElement extends BaseUiElement
     protected function selectorLabel(): string
     {
         $label = trim($this->label);
+
         return $label !== '' ? $label : Craft::t('app', 'Focal Point');
     }
 
@@ -42,7 +43,7 @@ class FocalPointUiElement extends BaseUiElement
                 'id' => 'label',
                 'name' => 'label',
                 'value' => $this->label,
-            ]) .
+            ]).
             Cp::textareaFieldHtml([
                 'label' => Craft::t('app', 'Instructions'),
                 'instructions' => Craft::t('app', 'Optional helper text shown below the label.'),
@@ -55,11 +56,11 @@ class FocalPointUiElement extends BaseUiElement
 
     public function formHtml(?ElementInterface $element = null, bool $static = false): ?string
     {
-        if (!$element instanceof Asset) {
+        if (! $element instanceof Asset) {
             return null;
         }
 
-        if (!in_array($element->kind, [Asset::KIND_IMAGE, Asset::KIND_VIDEO], true)) {
+        if (! in_array($element->kind, [Asset::KIND_IMAGE, Asset::KIND_VIDEO], true)) {
             return null;
         }
 
@@ -69,13 +70,13 @@ class FocalPointUiElement extends BaseUiElement
 
         $thumbnailUrl = self::resolveThumbnailUrl($element);
 
-        if (!$thumbnailUrl) {
+        if (! $thumbnailUrl) {
             return Html::tag('div', Html::tag('p', Craft::t('app', 'No preview available to set a focal point on.'), [
                 'class' => 'light',
             ]), $this->containerAttributes($element, $static));
         }
 
-        if (!Craft::$app->getElements()->canSave($element)) {
+        if (! Craft::$app->getElements()->canSave($element)) {
             return null;
         }
 
@@ -108,7 +109,7 @@ class FocalPointUiElement extends BaseUiElement
         $closeLabelJs = Json::encode($closeLabel);
         $hasFocalJs = Json::encode($hasFocal);
 
-        $view->registerCss(<<<CSS
+        $view->registerCss(<<<'CSS'
             [data-focal-ui-element] .button-fade .buttons { opacity: 1; }
             [data-focal-ui-element] .asset-image-preview { max-width: 100%; }
             [data-focal-ui-element] [data-focal-panel][hidden] { display: none; }
@@ -193,7 +194,7 @@ class FocalPointUiElement extends BaseUiElement
             ['class' => 'buttons'],
         );
 
-        $previewHtml = Html::tag('div', $buttonsHtml . $imgHtml, [
+        $previewHtml = Html::tag('div', $buttonsHtml.$imgHtml, [
             'id' => $containerId,
             'class' => ['button-fade', 'asset-image-preview'],
             'style' => 'position:relative;display:inline-block;max-width:100%;',
@@ -211,7 +212,7 @@ class FocalPointUiElement extends BaseUiElement
             'hidden' => true,
         ]);
 
-        $inputHtml = Html::tag('div', $revealButton . $panel, [
+        $inputHtml = Html::tag('div', $revealButton.$panel, [
             'data' => ['focal-ui-element' => true],
         ]);
 
@@ -233,6 +234,7 @@ class FocalPointUiElement extends BaseUiElement
             if (class_exists($helper) && method_exists($helper, 'getThumbnailUrl')) {
                 return $helper::getThumbnailUrl($asset) ?: null;
             }
+
             return null;
         }
 
