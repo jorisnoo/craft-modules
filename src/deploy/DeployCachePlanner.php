@@ -20,7 +20,7 @@ final class DeployCachePlanner
                 $refreshBlitz = true;
             }
 
-            if ($this->isFrontendFile($file)) {
+            if ($file === 'config/vite.php' || FrontendBuildCache::isInput($file)) {
                 $cacheKeys[] = 'vite-file-cache';
                 $refreshBlitz = true;
             }
@@ -60,19 +60,6 @@ final class DeployCachePlanner
             clearAll: true,
             reason: $reason,
         );
-    }
-
-    private function isFrontendFile(string $file): bool
-    {
-        if ($this->isIn($file, ['src/'])) {
-            return true;
-        }
-
-        if (in_array($file, ['package.json', 'package-lock.json', 'yarn.lock', 'pnpm-lock.yaml'], true)) {
-            return true;
-        }
-
-        return preg_match('/^(vite\.config\.|config\/vite\.php$)/', $file) === 1;
     }
 
     /**

@@ -11,9 +11,9 @@ class EnvironmentIndicator extends BaseModule
 {
     public function attachEventHandlers(): void
     {
-        $environment = App::env('CRAFT_ENVIRONMENT');
+        $environment = strtolower(trim((string) App::env('CRAFT_ENVIRONMENT')));
 
-        if ($environment === 'production' || ! Craft::$app->getRequest()->getIsCpRequest()) {
+        if (in_array($environment, ['', 'production', 'prod', 'live'], true) || ! Craft::$app->getRequest()->getIsCpRequest()) {
             return;
         }
 

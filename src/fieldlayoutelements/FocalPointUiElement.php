@@ -8,7 +8,10 @@ use craft\elements\Asset;
 use craft\fieldlayoutelements\BaseUiElement;
 use craft\helpers\Cp;
 use craft\helpers\Html;
+use craft\helpers\Image;
 use craft\helpers\Json;
+use craft\imagetransforms\FallbackTransformer;
+use craft\models\ImageTransform;
 use craft\web\assets\focalpoint\FocalPointAsset;
 
 class FocalPointUiElement extends BaseUiElement
@@ -108,6 +111,7 @@ class FocalPointUiElement extends BaseUiElement
         $editLabelJs = Json::encode($editLabel);
         $closeLabelJs = Json::encode($closeLabel);
         $hasFocalJs = Json::encode($hasFocal);
+        $unavailableJs = Json::encode(Craft::t('app', 'No preview available to set a focal point on.'));
 
         $view->registerCss(<<<'CSS'
             [data-focal-ui-element] .button-fade .buttons { opacity: 1; }
@@ -152,12 +156,13 @@ class FocalPointUiElement extends BaseUiElement
                     // Set the src on first reveal so we don't load the image
                     // for users who never open the picker.
                     if (!\$img.attr('src') && \$img.attr('data-src')) {
+                        \$img.one('load', init).one('error', () => {
+                            \$panel.text($unavailableJs);
+                        });
                         \$img.attr('src', \$img.attr('data-src'));
                     }
                     if (\$img[0] && \$img[0].complete && \$img[0].naturalWidth > 0) {
                         init();
-                    } else {
-                        \$img.one('load', init);
                     }
                 };
                 const close = () => {
@@ -238,7 +243,23 @@ class FocalPointUiElement extends BaseUiElement
             return null;
         }
 
-        // Image kind
-        return $asset->getUrl() ?? Craft::$app->getAssets()->getThumbUrl($asset, 800, 800, false);
+        if (! Image::canManipulateAsImage($asset->getExtension())) {
+            return null;
+        }
+
+        $transform = new ImageTransform([
+            'width' => 1200,
+            'height' => 1200,
+            'mode' => 'fit',
+            'format' => 'jpg',
+            'upscale' => false,
+        ]);
+        $url = $asset->getUrl($transform);
+        if ($url === null) {
+            $transform->setTransformer(FallbackTransformer::class);
+            $url = $asset->getUrl($transform);
+        }
+
+        return $url;
     }
 }

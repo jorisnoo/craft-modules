@@ -35,7 +35,7 @@ return [
 ];
 ```
 
-All modules are bootstrapped automatically by the `CraftModules` entry point.
+`CraftModules` boots the bundled modules and registers and boots `craft-sitemap`, `remote-sync`, and `twig-helpers`.
 
 ## Modules
 
@@ -49,7 +49,7 @@ Colors the CP sidebar header on non-production environments:
 
 - `dev` — cyan
 - Any other non-production value (e.g. `staging`) — amber
-- `production` — no indicator
+- `production`, `prod`, `live`, or unset — no indicator (case-insensitive)
 
 Uses the `CRAFT_ENVIRONMENT` env variable.
 
@@ -61,9 +61,11 @@ Injects custom styles on the CP login page (white background, black submit butto
 
 Adjusts the default CP navigation: removes the Dashboard item and replaces the Oh Dear plugin icon with a built-in gauge icon.
 
+`RedirectDashboard` sends the Dashboard index to Entries. `HideSlugWithoutUri` hides the slug control when an entry has no URI format. Add the **Focal Point** UI element to an asset field layout to edit the focal point on an uncropped preview; image conversion requires support from the server's image driver. Bunny Stream videos use their thumbnail when available.
+
 ### FlareExceptionFilter
 
-Filters common HTTP exceptions (400, 403, 404) from Flare error reporting. Only activates when the `spatie/craft-flare` plugin is installed.
+`webhubworks/craft-flare` owns exception reporting. In versions with `ignoredHttpStatusCodes`, configure that setting in the plugin (use `[400, 403, 404]` to also ignore bad requests). On older versions without that setting, the module filters common HTTP exceptions.
 
 ### Flare logs
 
@@ -74,15 +76,15 @@ FLARE_KEY=your-project-key
 FLARE_LOG_LEVEL=warning
 ```
 
-`FLARE_LOG_LEVEL` accepts `debug`, `info`, `warning` (the default), or `error`. The target batches messages until Yii flushes them and silently ignores delivery failures so logging cannot break a request.
+`FLARE_LOG_LEVEL` accepts `debug`, `info`, `warning` (the default), or `error`. The target excludes HTTP 400/403/404 and translation-source noise. Web requests export on Yii's final flush and finish an already-sent FastCGI response before delivery. Other web runtimes may still wait for the final export (500 ms timeout). Console workers can also export on a regular log flush. Log delivery is best effort and does not follow redirects.
 
 ### MakeUsersEditors
 
-Automatically assigns users to the `editor` user group after group/permission assignment.
+On the first canonical save of a credentialed user in the control panel, this adds `editor` only when the acting user can register users, can assign that specific group, and has an elevated session. Existing groups are retained. Public registrations, guest/customer records without credentials, console jobs and subsequent saves do not grant membership. Upgrading does not revoke existing memberships; review `editor` members if public registration has been enabled.
 
 ### TextSnippetTwigFunction
 
-Registers a `textSnippet` Twig function that retrieves a text snippet from the single entry of a section. Defaults to looking in the `translations` section.
+Registers `textSnippet` for site, CP, console and queued Twig renders. It retrieves snippets from the `translations` section by default. Trusted Twig markup retains its HTML; ordinary strings remain escaped. Each queued job starts with a fresh snippet cache.
 
 ```twig
 {{ textSnippet('welcomeMessage') }}
@@ -97,6 +99,32 @@ If a section spreads its snippets across several entry types, the lookup walks t
 {{ textSnippet('registrationConfirmed', 'newsletterStrings', 'newsletterVerificationEmail') }}
 ```
 
+### Oh Dear health checks
+
+When using `webhubworks/craft-ohdear`, register the desired checks in `config/ohdear.php`, replacing the corresponding built-ins:
+
+```php
+use Noo\CraftModules\ohdear\LicensesCheck;
+use Noo\CraftModules\ohdear\ResilientAbandonedPackagesCheck;
+use Noo\CraftModules\ohdear\ResilientCveCheck;
+use Noo\CraftModules\ohdear\ResilientQueueCheck;
+
+return [
+    'healthChecks' => [
+        LicensesCheck::new(),
+        ResilientQueueCheck::new()->graceMinutes(10),
+        ResilientCveCheck::new()->cachedViaCron(43200),
+        ResilientAbandonedPackagesCheck::new()->cachedViaCron(43200),
+    ],
+];
+```
+
+Schedule `php craft ohdear/health-check/refresh` more frequently than the cache staleness threshold. Composer failures retry once; if a last good result exists the second failure is logged and its original refresh time is preserved. Missing queue heartbeats have one grace period per cache clear, not one per day. When a `QueueHealthJob` errors, the module releases that job from Craft's queue.
+
+### Database backup cleanup
+
+`php craft craft-modules/db/cleanup --keep=10` deletes older `.sql` and `.sql.zip` backups in Craft's backup directory, retaining the newest ten by modification time by default.
+
 ### Deployment cache command
 
 The zero-argument deployment command compares the current Git commit with the last successful
@@ -110,6 +138,7 @@ php craft craft-modules/deploy
 Queueing is enabled by default. On Forge, state is stored at
 `$FORGE_SITE_ROOT/.deploy-state/blitz-commit`; elsewhere it falls back to
 `@storage/runtime/blitz-deploy/commit`. Blitz is optional and is skipped when it is not installed.
+The refresh suppresses Blitz's reverse-proxy purge in the deploy process: purge that proxy separately. With Oh Dear installed, deploy asks Craft's API to refresh license information and queues a replacement heartbeat after clearing the data cache. A license-server failure is reported without aborting deployment.
 
 The command fetches the single previous commit when a shallow deployment clone does not contain
 it. It performs a conservative full clear and Blitz refresh on its first run or when that commit

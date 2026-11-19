@@ -11,6 +11,12 @@ final class FrontendBuildCache
 {
     private const VERSION = 2;
 
+    private const INPUTS = [
+        'package.json', 'package-lock.json', 'npm-shrinkwrap.json', 'yarn.lock', 'pnpm-lock.yaml', '.npmrc',
+        'src', 'templates', 'vite.config.*', 'tailwind.config.*', 'postcss.config.*', 'webpack.config.*',
+        'tsconfig*.json', 'jsconfig*.json', '.env', '.env.*',
+    ];
+
     public function __construct(
         private readonly string $root,
         private readonly string $cacheDirectory,
@@ -18,32 +24,32 @@ final class FrontendBuildCache
         private readonly string $manifest = 'web/dist/.vite/manifest.json',
     ) {}
 
+    public static function isInput(string $path): bool
+    {
+        foreach (self::INPUTS as $input) {
+            if (fnmatch($input, $path, FNM_PATHNAME) || str_starts_with($path, $input.'/')) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return string[]
      */
     public function defaultInputs(): array
     {
-        $inputs = [
-            'package.json',
-            'package-lock.json',
-            'npm-shrinkwrap.json',
-            '.npmrc',
-            'src',
-            'templates',
-        ];
+        $inputs = [];
+        $root = rtrim($this->root, '/');
+        foreach (self::INPUTS as $pattern) {
+            if (! str_contains($pattern, '*')) {
+                $inputs[] = $pattern;
 
-        foreach ([
-            'vite.config.*',
-            'tailwind.config.*',
-            'postcss.config.*',
-            'webpack.config.*',
-            'tsconfig*.json',
-            'jsconfig*.json',
-            '.env',
-            '.env.*',
-        ] as $pattern) {
-            foreach (glob(rtrim($this->root, '/').'/'.$pattern) ?: [] as $path) {
-                $inputs[] = substr($path, strlen(rtrim($this->root, '/')) + 1);
+                continue;
+            }
+            foreach (glob($root.'/'.$pattern) ?: [] as $path) {
+                $inputs[] = substr($path, strlen($root) + 1);
             }
         }
 

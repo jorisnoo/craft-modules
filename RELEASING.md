@@ -12,6 +12,7 @@ Configured release checks:
 
 ```sh
 vendor/bin/pest
+vendor/bin/pint --test
 ```
 
 Install the project’s normal dependencies first. The helper runs these checks when publishing; dry-run prints them without executing them. Run any additional checks needed for the changed behavior before committing.

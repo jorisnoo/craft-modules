@@ -13,7 +13,9 @@ class FlareExceptionFilter extends BaseModule
 {
     public function attachEventHandlers(): void
     {
-        if (! class_exists(CraftFlare::class)) {
+        $plugin = class_exists(CraftFlare::class) ? CraftFlare::getInstance() : null;
+        $settings = $plugin?->getSettings();
+        if (! $plugin || ($settings && property_exists($settings, 'ignoredHttpStatusCodes'))) {
             return;
         }
 

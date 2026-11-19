@@ -43,3 +43,15 @@ it('creates a conservative full plan', function () {
         ->and($plan->refreshBlitz)->toBeTrue()
         ->and($plan->reason)->toBe('No state exists.');
 });
+
+it('refreshes HTML for each frontend input family', function (string $path) {
+    $plan = (new DeployCachePlanner)->plan([$path]);
+
+    expect($plan->cacheKeys)->toContain('vite-file-cache')
+        ->and($plan->refreshBlitz)->toBeTrue();
+})->with([
+    'src/js/app.js', 'templates/base.twig', 'vite.config.ts', 'postcss.config.cjs',
+    'tailwind.config.mjs', 'webpack.config.js', 'tsconfig.build.json', 'jsconfig.json',
+    'package.json', 'package-lock.json', 'npm-shrinkwrap.json', 'yarn.lock', 'pnpm-lock.yaml',
+    '.npmrc', '.env', '.env.production', 'config/vite.php',
+]);

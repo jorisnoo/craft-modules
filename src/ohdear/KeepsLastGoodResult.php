@@ -57,6 +57,7 @@ trait KeepsLastGoodResult
             $cached = Craft::$app->getCache()->get($this->cacheKey());
 
             if (is_array($cached) && ($cached['result'] ?? null) instanceof CheckResult) {
+                Craft::warning("{$this->checkResultName()} could not run: {$result->notificationMessage}; keeping last good result.", __METHOD__);
                 Craft::$app->getCache()->set($this->cacheKey(), $cached, $this->cacheTtl());
 
                 return $cached['result'];
