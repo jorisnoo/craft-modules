@@ -31,7 +31,6 @@
         "symfony/process": "^6.4 || ^7.0 || ^8.0"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
         "laravel/pint": "^1.18.1",
         "pestphp/pest": "^3.8 || ^4.4",
         "webhubworks/craft-ohdear": "^5.7.2"
