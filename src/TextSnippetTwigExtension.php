@@ -5,6 +5,7 @@ namespace Noo\CraftModules;
 use Craft;
 use craft\elements\Entry;
 use Twig\Extension\AbstractExtension;
+use Twig\Markup;
 use Twig\TwigFunction;
 
 /**
@@ -17,6 +18,11 @@ class TextSnippetTwigExtension extends AbstractExtension
 {
     /** @var array<string, Entry[]> Per-request cache of a section's entries, keyed by "section|siteId". */
     private array $entries = [];
+
+    public function reset(): void
+    {
+        $this->entries = [];
+    }
 
     public function getFunctions(): array
     {
@@ -32,7 +38,7 @@ class TextSnippetTwigExtension extends AbstractExtension
      * the section's entries and returns the value from whichever one carries the handle.
      * Pass $entryType to check that entry type first; it still falls back to the others.
      */
-    public function textSnippet(string $handle, string $sectionName = 'translations', ?string $entryType = null): ?string
+    public function textSnippet(string $handle, string $sectionName = 'translations', ?string $entryType = null): string|Markup|null
     {
         $entries = $this->sectionEntries($sectionName);
 
@@ -54,7 +60,7 @@ class TextSnippetTwigExtension extends AbstractExtension
         return null;
     }
 
-    private function snippetFromEntry(Entry $entry, string $handle, string $sectionName): ?string
+    private function snippetFromEntry(Entry $entry, string $handle, string $sectionName): string|Markup|null
     {
         $layout = $entry->getFieldLayout();
 
@@ -76,19 +82,15 @@ class TextSnippetTwigExtension extends AbstractExtension
         return null;
     }
 
-    /**
-     * Rich-text fields (CKEditor, Redactor) hand back Stringable value
-     * objects rather than plain strings, so cast before rejecting.
-     */
-    private function toSnippet(mixed $value): ?string
+    private function toSnippet(mixed $value): string|Markup|null
     {
         if (! is_string($value) && ! $value instanceof \Stringable) {
             return null;
         }
 
-        $value = (string) $value;
+        $string = (string) $value;
 
-        return $value !== '' ? $value : null;
+        return $string !== '' ? ($value instanceof Markup ? $value : $string) : null;
     }
 
     /** @return Entry[] */

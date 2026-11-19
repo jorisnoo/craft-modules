@@ -3,10 +3,13 @@
 namespace Noo\CraftModules\log;
 
 use Craft;
+use craft\web\Application;
 use Throwable;
 use yii\helpers\VarDumper;
+use yii\i18n\PhpMessageSource;
 use yii\log\Logger;
 use yii\log\Target;
+use yii\web\HttpException;
 
 /**
  * Sends Craft/Yii log messages to Flare's OpenTelemetry logs endpoint.
@@ -26,7 +29,14 @@ class FlareTarget extends Target
 
     public ?string $serviceStage = null;
 
-    public int $timeout = 2;
+    public float $timeout = 0.5;
+
+    public $except = [
+        HttpException::class.':400',
+        HttpException::class.':403',
+        HttpException::class.':404',
+        PhpMessageSource::class.':*',
+    ];
 
     public $logVars = [];
 
@@ -49,18 +59,18 @@ class FlareTarget extends Target
             return;
         }
 
+        if (function_exists('fastcgi_finish_request') && Craft::$app instanceof Application && Craft::$app->getResponse()->isSent) {
+            fastcgi_finish_request();
+        }
+
         $curl = curl_init();
 
         if ($curl === false) {
             return;
         }
 
-        $endpoint = rtrim($this->baseUrl, '/').'/v1/logs?'.http_build_query([
-            'key' => $this->apiKey,
-        ]);
-
         curl_setopt_array($curl, [
-            CURLOPT_URL => $endpoint,
+            CURLOPT_URL => rtrim($this->baseUrl, '/').'/v1/logs',
             CURLOPT_HTTPHEADER => [
                 'Accept: application/json',
                 'Content-Type: application/json',
@@ -69,18 +79,16 @@ class FlareTarget extends Target
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode($this->makePayload($this->messages), JSON_INVALID_UTF8_SUBSTITUTE),
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT => $this->timeout,
+            CURLOPT_CONNECTTIMEOUT_MS => 200,
+            CURLOPT_TIMEOUT_MS => max(1, (int) round($this->timeout * 1000)),
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_MAXREDIRS => 1,
+            CURLOPT_FOLLOWLOCATION => false,
         ]);
 
         try {
             curl_exec($curl);
         } catch (Throwable) {
             // Logging must never break the request or recursively create logs.
-        } finally {
-            curl_close($curl);
         }
     }
 

@@ -13,6 +13,10 @@ class MakeUsersEditors extends BaseModule
 {
     public function attachEventHandlers(): void
     {
+        if (! Craft::$app->getRequest()->getIsCpRequest()) {
+            return;
+        }
+
         Event::on(
             User::class,
             Element::EVENT_AFTER_SAVE,
@@ -24,21 +28,27 @@ class MakeUsersEditors extends BaseModule
                     return;
                 }
 
-                if (ElementHelper::isDraftOrRevision($user)) {
+                if (! $user->getIsCredentialed() || ElementHelper::isDraftOrRevision($user)) {
                     return;
                 }
 
-                $editorGroupId = Craft::$app->getUserGroups()->getGroupByHandle('editor')?->id;
-                if (! $editorGroupId) {
+                $session = Craft::$app->getUser();
+                $actor = $session->getIdentity();
+                if (! $actor?->can('registerUsers') || ! $session->getHasElevatedSession()) {
+                    return;
+                }
+
+                $group = Craft::$app->getUserGroups()->getGroupByHandle('editor');
+                if (! $group || ! $actor->can("assignUserGroup:$group->uid")) {
                     return;
                 }
 
                 $groupIds = array_map(fn ($g) => $g->id, $user->getGroups());
-                if (in_array($editorGroupId, $groupIds, false)) {
+                if (in_array($group->id, $groupIds, false)) {
                     return;
                 }
 
-                $groupIds[] = $editorGroupId;
+                $groupIds[] = $group->id;
                 Craft::$app->getUsers()->assignUserToGroups($user->id, $groupIds);
             }
         );

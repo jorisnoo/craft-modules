@@ -49,7 +49,7 @@ class ResilientQueueCheck extends QueueCheck
             // The marker shares the data cache with the heartbeat, so a cache
             // clear resets both and the grace period restarts from the first
             // check after the clear — the earliest anchor we can observe.
-            $cache->set(self::MISSING_SINCE_CACHE_KEY, $missingSince, 86400);
+            $cache->set(self::MISSING_SINCE_CACHE_KEY, $missingSince, 0);
         }
 
         if (time() - $missingSince > $this->graceMinutes * 60) {

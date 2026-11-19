@@ -5,6 +5,10 @@
   "checks": [
     [
       "vendor/bin/pest"
+    ],
+    [
+      "vendor/bin/pint",
+      "--test"
     ]
   ]
 }

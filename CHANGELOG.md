@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.4] - 2026-11-19
+
+### Fixed
+
+- Restrict automatic editor assignment to authorized, elevated control-panel sessions. Public registrations never gain membership. Audit existing editors after upgrading if you have allowed public registration.
+- Make `textSnippet()` available in console and queue templates, refresh cached entries between jobs, and preserve rich-text markup without disabling autoescaping for plain text.
+- Respect Craft Flare's configurable exception filter; exclude routine HTTP and translation log noise, bound transport delays and keep the token out of URLs and redirects.
+- Refresh Blitz for all frontend build inputs, fall back to a full refresh if a previous commit cannot be fetched, and warm license information after clearing the data cache.
+- Keep a missing queue heartbeat in warning after its grace period and log failed Composer checks that reuse an earlier result.
+- Use uncropped, browser-readable focal-point previews with a visible unavailable state. Leave the CP header unchanged in unset, `prod` and `live` environments.
+
 ## [2.2.3](https://github.com/jorisnoo/craft-modules/releases/tag/2.2.3) (2026-10-04)
 
 ### Bug Fixes

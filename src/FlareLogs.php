@@ -22,7 +22,7 @@ class FlareLogs extends BaseModule
             'serviceName' => App::env('CRAFT_APP_ID') ?: 'CraftCMS',
             'serviceStage' => App::env('CRAFT_ENVIRONMENT'),
             'levels' => FlareTarget::levelsFor(App::env('FLARE_LOG_LEVEL') ?: 'warning'),
-            'exportInterval' => 100,
+            'exportInterval' => Craft::$app->getRequest()->getIsConsoleRequest() ? 100 : 0,
         ]);
     }
 }

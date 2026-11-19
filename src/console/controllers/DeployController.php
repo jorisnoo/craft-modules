@@ -82,7 +82,8 @@ class DeployController extends Controller
             $this->printPlan($plan, $previousCommit, $currentCommit, $state->path);
 
             if (! $this->dryRun) {
-                $this->executePlan($plan);
+                $availableKeys = $plan->cacheKeys === [] ? [] : array_column(ClearCaches::cacheOptions(), 'key');
+                $this->executePlan($plan, $availableKeys);
                 $state->write($currentCommit);
                 $this->stdout("Deployment cache state updated to $currentCommit.\n", Console::FG_GREEN);
             }
@@ -139,28 +140,30 @@ class DeployController extends Controller
         return ExitCode::OK;
     }
 
-    private function executePlan(DeployCachePlan $plan): void
+    private function executePlan(DeployCachePlan $plan, array $availableKeys): void
     {
+        $dataCleared = $plan->clearAll;
         if ($plan->clearAll) {
             $this->runConsoleAction('clear-caches/all');
         } else {
-            $availableCaches = array_column(ClearCaches::cacheOptions(), null, 'key');
-
             foreach ($plan->cacheKeys as $cacheKey) {
-                if (! isset($availableCaches[$cacheKey])) {
+                if (! in_array($cacheKey, $availableKeys, true)) {
                     $this->stdout("Skipping unavailable cache: $cacheKey\n", Console::FG_YELLOW);
 
                     continue;
                 }
 
                 $this->runConsoleAction("clear-caches/$cacheKey");
+                $dataCleared = $dataCleared || $cacheKey === 'data';
             }
         }
 
-        if (
-            ($plan->clearAll || in_array('data', $plan->cacheKeys, true)) &&
-            class_exists(QueueHealthJob::class)
-        ) {
+        if ($dataCleared && class_exists(QueueHealthJob::class)) {
+            try {
+                Craft::$app->getApi()->getLicenseInfo();
+            } catch (Throwable) {
+                $this->stderr("Could not refresh Craft license information. The license health check may warn until the next refresh.\n", Console::FG_YELLOW);
+            }
             // Clearing the data cache wipes the Oh Dear queue heartbeat; push a
             // replacement so a healthy worker restores it without waiting for cron.
             Queue::push(new QueueHealthJob);

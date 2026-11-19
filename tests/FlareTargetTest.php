@@ -39,3 +39,18 @@ it('creates an OpenTelemetry logs payload', function () {
         ->and($record['body'])->toBe(['stringValue' => 'Something happened'])
         ->and(abs($record['timeUnixNano'] - 1_700_000_000_250_000_000))->toBeLessThan(1_000);
 });
+
+it('retains actionable errors and warnings but not routine HTTP and translation noise', function () {
+    $target = new FlareTarget(['levels' => FlareTarget::levelsFor('warning'), 'exportInterval' => 0]);
+    $target->collect([
+        ['bad request', Logger::LEVEL_ERROR, 'yii\web\HttpException:400', 0],
+        ['forbidden', Logger::LEVEL_ERROR, 'yii\web\HttpException:403', 0],
+        ['not found', Logger::LEVEL_ERROR, 'yii\web\HttpException:404', 0],
+        ['missing translation', Logger::LEVEL_WARNING, 'yii\i18n\PhpMessageSource:app', 0],
+        ['info', Logger::LEVEL_INFO, 'application', 0],
+        ['service unavailable', Logger::LEVEL_ERROR, 'yii\web\HttpException:503', 0],
+        ['warning', Logger::LEVEL_WARNING, 'application', 0],
+    ], false);
+
+    expect(array_column($target->messages, 0))->toBe(['service unavailable', 'warning']);
+});
