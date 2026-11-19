@@ -5,6 +5,7 @@ namespace Noo\CraftModules\console\controllers;
 use Craft;
 use craft\console\Controller;
 use craft\helpers\Console;
+use craft\helpers\FileHelper;
 use craft\helpers\Queue;
 use craft\utilities\ClearCaches;
 use Noo\CraftModules\deploy\DeployCachePlan;
@@ -67,7 +68,9 @@ class DeployController extends Controller
 
         try {
             $currentCommit = $git->currentCommit($this->to);
-            $previousCommit = $this->from !== '' ? $this->from : $state->read();
+            $previous = $state->read();
+            $previousCommit = $this->from !== '' ? $this->from : ($previous['commit'] ?? null);
+            $manifest = StateFile::manifestDigest($root);
 
             if ($this->force) {
                 $plan = $planner->full('A full refresh was forced.');
@@ -76,15 +79,18 @@ class DeployController extends Controller
             } elseif (! $git->fetchCommit($previousCommit)) {
                 $plan = $planner->full("The previous commit $previousCommit is unavailable in this clone.");
             } else {
-                $plan = $planner->plan($git->changedFiles($previousCommit, $currentCommit));
+                $plan = $planner->plan(
+                    $git->changedFiles($previousCommit, $currentCommit),
+                    ! array_key_exists('manifestSha256', $previous ?? []) || $previous['manifestSha256'] !== $manifest,
+                );
             }
 
             $this->printPlan($plan, $previousCommit, $currentCommit, $state->path);
 
             if (! $this->dryRun) {
-                $availableKeys = $plan->cacheKeys === [] ? [] : array_column(ClearCaches::cacheOptions(), 'key');
-                $this->executePlan($plan, $availableKeys);
-                $state->write($currentCommit);
+                $options = $plan->clearAll || $plan->cacheKeys !== [] ? $this->cacheOptions() : [];
+                $this->executePlan($plan, $options);
+                $state->write($currentCommit, $manifest);
                 $this->stdout("Deployment cache state updated to $currentCommit.\n", Console::FG_GREEN);
             }
         } catch (Throwable $exception) {
@@ -140,22 +146,33 @@ class DeployController extends Controller
         return ExitCode::OK;
     }
 
-    private function executePlan(DeployCachePlan $plan, array $availableKeys): void
+    protected function cacheOptions(): array
     {
-        $dataCleared = $plan->clearAll;
-        if ($plan->clearAll) {
-            $this->runConsoleAction('clear-caches/all');
-        } else {
-            foreach ($plan->cacheKeys as $cacheKey) {
-                if (! in_array($cacheKey, $availableKeys, true)) {
-                    $this->stdout("Skipping unavailable cache: $cacheKey\n", Console::FG_YELLOW);
+        return array_column(ClearCaches::cacheOptions(), null, 'key');
+    }
 
-                    continue;
-                }
+    private function executePlan(DeployCachePlan $plan, array $options): void
+    {
+        $dataCleared = false;
+        foreach ($plan->clearAll ? array_keys($options) : $plan->cacheKeys as $key) {
+            if (! isset($options[$key])) {
+                $this->stdout("Skipping unavailable cache: $key\n", Console::FG_YELLOW);
 
-                $this->runConsoleAction("clear-caches/$cacheKey");
-                $dataCleared = $dataCleared || $cacheKey === 'data';
+                continue;
             }
+
+            // Craft's clear-caches console actions log failures but return exit code 0.
+            // Execute the registered operation so a failure leaves the baseline untouched.
+            $this->stdout("Clearing cache: $key\n");
+            $action = $options[$key]['action'];
+            if (is_string($action)) {
+                if (file_exists($action) || is_link($action)) {
+                    FileHelper::clearDirectory($action);
+                }
+            } elseif ($action(...($options[$key]['params'] ?? [])) === false) {
+                throw new \RuntimeException("Failed to clear cache: $key");
+            }
+            $dataCleared = $dataCleared || $key === 'data';
         }
 
         if ($dataCleared && class_exists(QueueHealthJob::class)) {
@@ -213,7 +230,7 @@ class DeployController extends Controller
 
         $exitCode = $controller->runAction($actionId);
 
-        if ($exitCode !== null && $exitCode !== ExitCode::OK) {
+        if ($exitCode !== ExitCode::OK) {
             throw new \RuntimeException("Console action failed with exit code $exitCode: $route");
         }
     }

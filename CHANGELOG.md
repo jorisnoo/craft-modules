@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.5] - 2026-11-19
+
+### Fixed
+
+- Refresh Blitz and the Vite file cache when a build changes the manifest, even on a redeploy of the same commit. Run the frontend build before the deployment cache command. Existing commit-only state upgrades on the next successful deploy with one conservative frontend refresh.
+
 ## [2.2.4] - 2026-11-19
 
 ### Fixed

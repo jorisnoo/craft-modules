@@ -58,7 +58,7 @@ it('clears only available keys, restores health checks and scopes proxy suppress
             return 0;
         }
     };
-    Craft::$app->expects($this->exactly(2))->method('createController')->willReturnCallback(function ($route) use (&$routes, $command) {
+    Craft::$app->expects($this->once())->method('createController')->willReturnCallback(function ($route) use (&$routes, $command) {
         $routes[] = $route;
 
         return [$command, $route];
@@ -66,7 +66,10 @@ it('clears only available keys, restores health checks and scopes proxy suppress
     $deploy = $this->getMockBuilder(DeployController::class)->disableOriginalConstructor()->onlyMethods(['stdout', 'stderr'])->getMock();
     $deploy->expects($apiAvailable ? $this->never() : $this->once())->method('stderr');
     try {
-        (new ReflectionMethod(DeployController::class, 'executePlan'))->invoke($deploy, new DeployCachePlan([], ['data', 'missing'], true), ['data']);
+        $options = ['data' => ['action' => function (string $key) use (&$routes) {
+            $routes[] = "clear-caches/$key";
+        }, 'params' => ['data']]];
+        (new ReflectionMethod(DeployController::class, 'executePlan'))->invoke($deploy, new DeployCachePlan([], ['data', 'missing'], true), $options);
         expect($routes)->toBe(['clear-caches/data', 'blitz/cache/refresh'])
             ->and($purger->hasEventHandlers('beforePurge'))->toBeFalse();
     } finally {

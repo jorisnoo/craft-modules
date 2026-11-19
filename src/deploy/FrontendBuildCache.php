@@ -9,6 +9,8 @@ use RuntimeException;
 
 final class FrontendBuildCache
 {
+    public const DEFAULT_MANIFEST = 'web/dist/.vite/manifest.json';
+
     private const VERSION = 2;
 
     private const INPUTS = [
@@ -21,7 +23,7 @@ final class FrontendBuildCache
         private readonly string $root,
         private readonly string $cacheDirectory,
         private readonly string $outputDirectory = 'web/dist',
-        private readonly string $manifest = 'web/dist/.vite/manifest.json',
+        private readonly string $manifest = self::DEFAULT_MANIFEST,
     ) {}
 
     public static function isInput(string $path): bool

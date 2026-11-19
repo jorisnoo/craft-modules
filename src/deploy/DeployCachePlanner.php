@@ -7,10 +7,10 @@ final class DeployCachePlanner
     /**
      * @param  string[]  $changedFiles
      */
-    public function plan(array $changedFiles): DeployCachePlan
+    public function plan(array $changedFiles, bool $manifestChanged = false): DeployCachePlan
     {
-        $cacheKeys = [];
-        $refreshBlitz = false;
+        $cacheKeys = $manifestChanged ? ['vite-file-cache'] : [];
+        $refreshBlitz = $manifestChanged;
 
         foreach ($changedFiles as $file) {
             $file = ltrim(str_replace('\\', '/', $file), '/');
@@ -48,6 +48,7 @@ final class DeployCachePlanner
             changedFiles: array_values(array_unique($changedFiles)),
             cacheKeys: $cacheKeys,
             refreshBlitz: $refreshBlitz,
+            reason: $manifestChanged ? 'The built Vite manifest changed or has no recorded baseline.' : null,
         );
     }
 
