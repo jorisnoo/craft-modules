@@ -145,6 +145,18 @@ it. It performs a conservative full clear and Blitz refresh on its first run or 
 remains unavailable. Later runs map template, frontend, configuration, module, migration,
 Composer, and package changes to the relevant caches. Unrelated changes require no cache work.
 
+**Build or restore `web/dist` first, then run `deploy` against that release.** Deploy compares the
+SHA-256 of the built `web/dist/.vite/manifest.json` with the last successful deployment. If the
+manifest changes, appears, or disappears, it clears the Vite file cache (when registered) and
+refreshes Blitz even at the same Git commit. It does not read `.env` or store its contents.
+Existing commit-only state triggers one conservative frontend refresh before being upgraded
+in place. A project with no manifest records that absence and does not repeatedly refresh.
+
+The commit and digest are replaced together after the cache commands succeed, never on dry-run
+or a failed refresh. With queued warming, success means the command accepted the work, not that
+every worker has finished it. `--from` overrides the Git comparison only; the manifest baseline
+still comes from the state file. `--force` still requests a full refresh.
+
 Available overrides:
 
 ```bash
@@ -170,6 +182,9 @@ It fingerprints `package.json`, npm lock/config files, Vite `.env` files, everyt
 Symlinked inputs are followed and their target contents are included. On a cache hit it restores
 `web/dist`; on a miss it runs `npm ci` and `npm run build`, verifies
 `web/dist/.vite/manifest.json`, and stores the result. The five most recent builds are retained.
+Variables injected only into the build process are not files and do not change the build-cache
+key. If those inputs change, run `deploy/build --force` (or rebuild outside the cache) **before**
+`deploy`. A restored, unchanged manifest cannot signal a new build.
 
 On Forge, builds are cached in `$FORGE_SITE_ROOT/.deploy-cache/frontend-builds`, outside individual
 releases. Elsewhere the default is `@storage/runtime/deploy-build-cache`. Use these overrides to
